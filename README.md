@@ -1,4 +1,13 @@
-# How to:
+# How to clone and launch:
+```
+git clone git@github.com:krawmaciej/IO-chess-webapp.git
+cd IO-chess-webapp/
+git checkout setup/init
+npm install
+npm start
+```
+
+# How to initialize React project
 // https://nodejs.org/dist/v14.15.1/node-v14.15.1-x64.msi
 1. install node.js
 
