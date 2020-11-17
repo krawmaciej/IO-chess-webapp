@@ -3,8 +3,8 @@
 1. install node.js
 
 // https://reactjs.org/docs/create-a-new-react-app.html#create-react-app
-1. npx create-react-app IO-chess-webapp // init react project
-1. cd IO-chess-webapp // open folder
+1. npx create-react-app io-chess-webapp // init react project
+1. cd io-chess-webapp // open folder
 
 // https://reactrouter.com/web/guides/quick-start/installation
 1. npm install react-router-dom // install react-router -> todo: change to express?
