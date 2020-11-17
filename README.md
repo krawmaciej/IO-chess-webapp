@@ -11,11 +11,10 @@ npm start
 // https://nodejs.org/dist/v14.15.1/node-v14.15.1-x64.msi
 1. install node.js
 
-<!--
+//TODO: Are these 2 steps necessary?
 // https://reactjs.org/docs/create-a-new-react-app.html#create-react-app
 1. npx create-react-app io-chess-webapp // init react project
 1. cd io-chess-webapp // open folder
--->
 
 // https://reactrouter.com/web/guides/quick-start/installation
 1. npm install react-router-dom // install react-router -> todo: change to express?
