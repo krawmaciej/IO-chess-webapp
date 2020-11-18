@@ -4,6 +4,7 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import { auth } from './firebase/firebase'
 import "./App.css";
 
 export default function App() {
