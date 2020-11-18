@@ -14,13 +14,13 @@ export default function App() {
           <Home />
         </Route>
         <Route exact path="/play">
-          <Play />
-        </Route>
+          <Play />    
+        </Route>      
       </div>
       <div>
-        <nav>
+        <nav>     
          <Link to="/play">Play!</Link>
-        </nav>
+        </nav>       
       </div>
     </Router>
   );
