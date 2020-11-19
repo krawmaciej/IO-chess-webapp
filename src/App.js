@@ -4,8 +4,7 @@ import {
   Switch,
   BrowserRouter as Router,
   Route,
-  Redirect,
-  Link
+  Redirect
 } from "react-router-dom";
 
 // components
@@ -18,22 +17,94 @@ import { auth } from './firebase/firebase'
 // styles
 import "./App.css";
 
-export default function App() {
+// custom routes, like react route
+function UserRoute({ component: Component, isLoggedIn, ...rest }) {
   return (
-    <Router>
-      <div>
-        <Route exact path="/">
-          <Home />
-        </Route>
-        <Route exact path="/play">
-          <Play />    
-        </Route>      
-      </div>
-      <div>
-        <nav>     
-         <Link to="/play">Play!</Link>
-        </nav>       
-      </div>
-    </Router>
+    <Route {...rest}
+      render = {
+        props => {
+          if (isLoggedIn === true) {
+            return (<Component {...props} />);
+          } else {
+            return (<Redirect to="/createAccount" />);
+          }
+        }
+      }
+    />
   );
 }
+
+function GuestRoute({ component: Component, isLoggedIn, ...rest }) {
+  return (
+    <Route {...rest}
+      render = {
+        props => {
+          if (isLoggedIn === true) {
+            return (<Redirect to="/" />);
+          } else {
+            return (<Component {...props} />);
+          }
+       }
+      }
+    />
+  );
+}
+
+
+export default class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      isLoggedIn: false,
+      uid: "",
+      onAuthFinished: false // taki hack żeby poczekać na skończenie dziłania funkcji auth().onAuthStateChanged
+    };
+  }
+
+  componentDidMount() {
+    auth().onAuthStateChanged(user => {
+      if (user) {
+        this.setState({
+          isLoggedIn: true,
+          uid: user.uid,
+          onAuthFinished: true
+        });
+      } else {
+        this.setState({
+          isLoggedIn: false,
+          uid: "",
+          onAuthFinished: true
+        });
+      }
+    });
+  }
+
+  render() {
+    if (this.state.onAuthFinished === false) {
+      return null;
+    } else { 
+      return (
+        <Router>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <UserRoute
+              exact path="/play"
+              isLoggedIn={this.state.isLoggedIn}
+              component={Play}
+            />
+            <GuestRoute
+              exact path="/createAccount"
+              isLoggedIn={this.state.isLoggedIn}
+              component={CreateAccount}
+            />
+            <GuestRoute
+              exact path="/login"
+              isLoggedIn={this.state.isLoggedIn}
+              component={Login}
+            />
+          </Switch>
+        </Router>
+      );
+    };
+  };
+};
