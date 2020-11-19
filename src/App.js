@@ -4,7 +4,8 @@ import {
   Switch,
   BrowserRouter as Router,
   Route,
-  Redirect
+  Redirect,
+  Link
 } from "react-router-dom";
 
 // components
@@ -35,12 +36,4 @@ export default function App() {
       </div>
     </Router>
   );
-}
-
-function Home() {
-  return <h2>Home</h2>;
-}
-
-function Play() {
-  return <h2>Chessboard.</h2>;
 }
