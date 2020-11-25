@@ -1,97 +1,82 @@
-var board;
+var board = [];
 var move_now;
-var switcher;
-var figures;
-function init(){
- board = [
-    [9, 11, 10, 8, 7, 10, 11, 9],
-    [12, 12, 12, 12, 12, 12, 12, 12],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [6, 6, 6, 6, 6, 6, 6, 6],
-    [3, 5, 4, 2, 1, 4, 5, 3]
-];
-move_now = 0;
-switcher = 0;
-figures = ["", "&#9812", "&#9813", "&#9814", "&#9815", "&#9816", "&#9817", "&#9818", "&#9819", "&#9820", "&#9821", "&#9822", "&#9823"];
- 
- 
+var switcher = "";
 
-function draw() {
-    var area = document.getElementById("area");
-    for(var i = 0; i <= board.length - 1; i++){
-    
-    if(i%2 == 0){
-    for(var j = 0; j <= board[i].length - 1; j++){
-    if(j%2 == 0){
-        area.innerHTML += "<div onclick='move(this)' id='"+i+"_"+j+"' class='dot' style='float: left; font-size: 30px; display: flex; align-items: center;text-shadow: 1px 1px #fff; justify-content: center; background: #fff;width: 40px; height: 40px;'>"+figures[board[i][j]]+"</div>"
- }else {
-            area.innerHTML += "<div id='"+i+"_"+j+"' class='dot' onclick='move(this)' style='float: left;display: flex;font-size: 30px; align-items: center; text-shadow: 1px 1px #fff;justify-content: center; background: #333; width: 40px; height: 40px;'>"+figures[board[i][j]]+"</div>"
- }
-      
-        
-    }
-    }else {
-        for(var j = 0; j <= board[i].length - 1; j++){
-    if(j%2 == 0){
-        area.innerHTML += "<div id='"+i+"_"+j+"' onclick='move(this)' class='dot' style='float: left;display: flex;font-size: 30px; align-items: center; justify-content: center; background: #333; text-shadow: 1px 1px #fff; width: 40px; height: 40px;'>"+figures[board[i][j]]+"</div>"
- }else {
-            area.innerHTML += "<div onclick='move(this)' id='"+i+"_"+j+"' class='dot' style='float: left; display: flex;font-size: 30px; align-items: center;text-shadow: 1px 1px #fff;background: #fff; justify-content: center;width: 40px; height: 40px;'>"+figures[board[i][j]]+"</div>"
- }
-      
-        
-    }
-    }
-    area.innerHTML += "<br/>"
-        
-    }
-}
+function init() {
 
+    for (var i = 0; i < 8; i++)
+        board[i] = [];
 
-draw();
-}
-function move(e){
-var pos = e.id.split("_")
-if(switcher == 0){
+    //BLACK
+    for (var j = 0; j < 8; j++)
+        board[1][j] = "&#9823"; //pawns
+    board[0][0] = board[0][7] = "&#9820"; //rook
+    board[0][1] = board[0][6] = "&#9822"; //knight
+    board[0][2] = board[0][5] = "&#9821"; //bishop
+    board[0][3] = "&#9819"; //queen
+    board[0][4] = "&#9818"; //king
 
-move_now = board[pos[0]][pos[1]];
-board[pos[0]][pos[1]] = "0"
-    e.style.background = "#26A69A";
-    switcher = 1;
-    }else {
-       var area = document.getElementById("area");
-     area.innerHTML = "";
-        board[pos[0]][pos[1]] = move_now;
+    //WHITE
+    for (var j = 0; j < 8; j++)
+        board[6][j] = "<div style='color:white;'>&#9823</div>"; //pawns
+    board[7][0] = board[7][7] = "<div style='color:white;'>&#9820</div>"; //rook
+    board[7][1] = board[7][6] = "<div style='color:white;'>&#9822</div>"; //knight
+    board[7][2] = board[7][5] = "<div style='color:white;'>&#9821</div>"; //bishop
+    board[7][3] = "<div style='color:white;'>&#9819</div>"; //queen
+    board[7][4] = "<div style='color:white;'>&#9818</div>"; //king
+
+    for (var i = 2; i < 6; i++) //blanks
+        for (var j = 0; j < 8; j++)
+            board[i][j] = "";
+
+    function draw() {
         var area = document.getElementById("area");
-    for(var i = 0; i <= board.length - 1; i++){
-    
-    if(i%2 == 0){
-    for(var j = 0; j <= board[i].length - 1; j++){
-    if(j%2 == 0){
-        area.innerHTML += "<div onclick='move(this)' id='"+i+"_"+j+"' class='dot' style='float: left; font-size: 30px; display: flex; align-items: center;text-shadow: 1px 1px #fff; justify-content: center; background: #fff;width: 40px; height: 40px;'>"+figures[board[i][j]]+"</div>"
- }else {
-            area.innerHTML += "<div id='"+i+"_"+j+"' class='dot' onclick='move(this)' style='float: left;display: flex;font-size: 30px; align-items: center; text-shadow: 1px 1px #fff;justify-content: center; background: #333; width: 40px; height: 40px;'>"+figures[board[i][j]]+"</div>"
- }
-      
-        
+        var c = 0;
+        for (var i = 0; i < 8; i++) {
+            c++;
+            for (var j = 0; j < 8; j++) {
+                if (c % 2 == 0) {
+                    area.innerHTML += "<div id='" + i + "_" + j + "' onclick='move(this)' style='float:left; font-size:80px; display:flex; align-items:center; justify-content:center; background:grey; width:100px; height:100px;'>" + board[i][j] + "</div>"
+                }
+                else {
+                    area.innerHTML += "<div id='" + i + "_" + j + "' onclick='move(this)' style='float:left; font-size:80px; display:flex; align-items:center; justify-content:center; background:#333; width:100px; height:100px;'>" + board[i][j] + "</div>"
+                }
+                c++;
+            }
+            area.innerHTML += "<br/>"
+        }
     }
-    }else {
-        for(var j = 0; j <= board[i].length - 1; j++){
-    if(j%2 == 0){
-        area.innerHTML += "<div id='"+i+"_"+j+"' onclick='move(this)' class='dot' style='float: left;display: flex;font-size: 30px; align-items: center; justify-content: center; background: #333; text-shadow: 1px 1px #fff; width: 40px; height: 40px;'>"+figures[board[i][j]]+"</div>"
- }else {
-            area.innerHTML += "<div onclick='move(this)' id='"+i+"_"+j+"' class='dot' style='float: left; display: flex;font-size: 30px; align-items: center;text-shadow: 1px 1px #fff;background: #fff; justify-content: center;width: 40px; height: 40px;'>"+figures[board[i][j]]+"</div>"
- }
-      
-        
+    draw();
+}
+
+function move(e) {
+    var pos = e.id.split("_"); //id i_j
+
+    if (switcher == "") { //blank checked
+        move_now = board[pos[0]][pos[1]];
+        board[pos[0]][pos[1]] = "";
+        e.style.background = "magenta"; //active figure
+        switcher = "1";
     }
-    }
-    area.innerHTML += "<br/>"
-        
-    }
-        
-        switcher = 0;
+    else { //figure checked
+        var area = document.getElementById("area");
+        area.innerHTML = ""; // new area
+        board[pos[0]][pos[1]] = move_now;
+
+        var c = 0;
+        for (var i = 0; i < 8; i++) {
+            c++;
+            for (var j = 0; j < 8; j++) {
+                if (c % 2 == 0) {
+                    area.innerHTML += "<div onclick='move(this)' id='" + i + "_" + j + "' style='float:left; font-size:80px; display:flex; align-items:center; justify-content:center; background:grey; width:100px; height:100px;'>" + board[i][j] + "</div>"
+                }
+                else {
+                    area.innerHTML += "<div id='" + i + "_" + j + "' onclick='move(this)' style='float:left; font-size:80px; display:flex; align-items:center; justify-content:center; background:#333; width:100px; height:100px;'>" + board[i][j] + "</div>"
+                }
+                c++;
+            }
+            area.innerHTML += "<br/>"
+        }
+        switcher = "";
     }
 }
