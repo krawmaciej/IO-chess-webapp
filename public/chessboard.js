@@ -35,11 +35,11 @@ function init() {
         for (var i = 0; i < 8; i++) {
             c++;
             for (var j = 0; j < 8; j++) {
-                if (c % 2 == 0) {
-                    area.innerHTML += "<div id='" + i + "_" + j + "' onclick='move(this)' style='float:left; font-size:80px; display:flex; align-items:center; justify-content:center; background:grey; width:100px; height:100px;'>" + board[i][j] + "</div>"
+                if (c % 2 === 0) {
+                    area.innerHTML += "<div id='" + i + "_" + j + "' onclick='move(this)' style='float:left; font-size:80px; display:flex; align-items:center; justify-content:center; background:grey; width:80px; height:80px;'>" + board[i][j] + "</div>"
                 }
                 else {
-                    area.innerHTML += "<div id='" + i + "_" + j + "' onclick='move(this)' style='float:left; font-size:80px; display:flex; align-items:center; justify-content:center; background:#333; width:100px; height:100px;'>" + board[i][j] + "</div>"
+                    area.innerHTML += "<div id='" + i + "_" + j + "' onclick='move(this)' style='float:left; font-size:80px; display:flex; align-items:center; justify-content:center; background:#333; width:80px; height:80px;'>" + board[i][j] + "</div>"
                 }
                 c++;
             }
@@ -52,7 +52,7 @@ function init() {
 function move(e) {
     var pos = e.id.split("_"); //id i_j
 
-    if (switcher == "") { //blank checked
+    if (switcher === "") { //blank checked
         move_now = board[pos[0]][pos[1]];
         board[pos[0]][pos[1]] = "";
         e.style.background = "magenta"; //active figure
@@ -67,11 +67,11 @@ function move(e) {
         for (var i = 0; i < 8; i++) {
             c++;
             for (var j = 0; j < 8; j++) {
-                if (c % 2 == 0) {
-                    area.innerHTML += "<div onclick='move(this)' id='" + i + "_" + j + "' style='float:left; font-size:80px; display:flex; align-items:center; justify-content:center; background:grey; width:100px; height:100px;'>" + board[i][j] + "</div>"
+                if (c % 2 === 0) {
+                    area.innerHTML += "<div onclick='move(this)' id='" + i + "_" + j + "' style='float:left; font-size:80px; display:flex; align-items:center; justify-content:center; background:grey; width:80px; height:80px;'>" + board[i][j] + "</div>"
                 }
                 else {
-                    area.innerHTML += "<div id='" + i + "_" + j + "' onclick='move(this)' style='float:left; font-size:80px; display:flex; align-items:center; justify-content:center; background:#333; width:100px; height:100px;'>" + board[i][j] + "</div>"
+                    area.innerHTML += "<div id='" + i + "_" + j + "' onclick='move(this)' style='float:left; font-size:80px; display:flex; align-items:center; justify-content:center; background:#333; width:80px; height:80px;'>" + board[i][j] + "</div>"
                 }
                 c++;
             }

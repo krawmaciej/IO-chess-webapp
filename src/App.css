@@ -36,3 +36,48 @@
     transform: rotate(360deg);
   }
 }
+
+.loggeduser{
+  text-align: center;
+  background-color: yellow;
+}
+
+#game{
+  height: 715px;
+  width: 100%;
+}
+
+#gameboard{
+  display: block;
+  float: left;
+  width: 68%;
+  height: 732px;
+  min-height: 100%;
+}
+
+#gamepanel{
+  padding: 10px;
+  display: block;
+  width: 30%;
+  height: 715px;
+  min-height: 100%;
+  float: right;
+  background-color: #99ccee;
+  border: 1px solid red;
+}
+
+#frame{
+  height: 100%;
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+  border: 1px solid grey;
+}
+
+.bold{
+  font-weight: bold;
+}
+
+.upline{
+  border-top: 1px solid grey;
+}

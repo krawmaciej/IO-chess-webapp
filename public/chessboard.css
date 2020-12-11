@@ -1,21 +1,24 @@
 body{
     margin: 0;
     padding: 0;
-    background: white;
+    background: wheat;
 }
 #area{
     border: 1px solid #333;
-    padding: 0;
-    height: 800px;
-    width: 800px;
-    transform: translate(-50%, -50%);
-    margin-top: 50%;
-    margin-left: 50%;
+    padding: 0px;
+    height: 640px;
+    width: 640px;
+    /*transform: translate(-50%, -50%);*/
+    margin-top: 50px;
+    margin-left: 100px;
+    margin-bottom: 50px;
+    margin-right: 100px;
     overflow: hidden;
     border-radius: 4px;
     background: url(https://icon-library.net/images/spinner-icon-gif/spinner-icon-gif-10.jpg);
     background-size: cover;
     background-position: center;
+    cursor: pointer;
 }
 .button{
     margin: 0;
@@ -54,4 +57,10 @@ body{
 .items{
     width: 320px;
     display: flex;
+}
+#tier{
+    float: right;
+    position: absolute;
+    top: 300px;
+    right: 80px;
 }
