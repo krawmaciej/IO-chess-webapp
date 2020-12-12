@@ -1,19 +1,48 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>CHESS GAME</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
-        <link href="chessboard.css" rel="stylesheet">
-       <!-- <link href="chessboard.js" rel="script">-->
-    </head>
-    <body onload="init()">
+  <head>
+      <title>CHESS GAME</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+      <link href="stylesheet.css" rel="stylesheet">
+      <link href="chessboard.css" rel="stylesheet">      
+      <script type="text/javascript" src="chess.js"></script>
+      <script type="text/javascript" src="chessboard.js"></script>
+	  <script type="text/javascript" src="simulateServer.js"></script>
+  </head>
+  <body>
+  
+    <div id="chessBoard">
+      <!-- <div onclick='moveChessPiece()' class="boardSquare boardSquareBlack" id="8_8">♞</div> -->
+    </div>
+	
+	<div style='text-align: left; height: 100%; width: 100%;'>
+		<form class="pure-form">
+			<input style="font-size: 50px; width: 300px;" id="from" type="text" placeholder="from" />
+			<input style="font-size: 50px; width: 300px;" id="to" type="text" placeholder="to" />
+			<input style="font-size: 50px; width: 300px;" id="clickMe" type="button" value="move" onclick="testFunc({test: 'test'});" />
+		</form>
+	</div>
 
-        <div id="area">
-                                
-          </div>
-   
-          <script type="text/javascript" src="chessboard.js">
-        
-          </script>
-    </body>
+    <script>
+
+      const chessPieces = initChessPieces();
+      const chessBoard = initBoard(chessPieces);
+
+      drawBoard();
+      drawChessPieces(chessBoard);
+
+     /*
+	 enemy movement tests
+	 console.log(chessBoard[0][0]);
+     chessBoard[1][1].calculateMoves();
+	 const move = {
+		from: document.getElementById('0_0'),
+		to: document.getElementById('4_4')
+	 }
+	 console.log(move); 
+	 moveEnemyChessPiece(move);
+	 */
+
+    </script>    
+  </body>
 </html>
