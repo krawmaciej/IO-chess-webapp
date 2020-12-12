@@ -1,0 +1,6 @@
+body, html {width: 100%; height: 100%; margin: 0; padding: 0}
+.board {margin: 20px; height: 100%; width: 100%;}
+.board iframe {
+    display: block;
+    margin: 0 auto;
+    border: none;}
