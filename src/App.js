@@ -57,6 +57,7 @@ export default class App extends Component {
     this.state = {
       isLoggedIn: false,
       uid: "",
+      gameId: "",
       onAuthFinished: false // taki hack żeby poczekać na skończenie dziłania funkcji auth().onAuthStateChanged
     };
   }

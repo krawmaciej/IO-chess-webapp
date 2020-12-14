@@ -20,10 +20,10 @@ export default class Play extends React.Component {
   }
 
   componentDidMount() {
-    const chessPieces = initChessPieces();
-    const chessBoard = initBoard(chessPieces);
+    const chessPieces = initChessPieces(); // get starting chess pieces positions
+    const chessBoard = initBoard(chessPieces); // put pieces on board
 
     drawBoard();
-    drawChessPieces(chessBoard);
+    drawChessPieces(chessBoard); // draw added pieces on board
   }
 }
