@@ -145,7 +145,7 @@ class Bishop extends ChessPiece {
     }
 
     // down-left to up-right
-    x = this.posX + this.posY > 7 ? 7 : this.posX + this.posY,
+    x = this.posX + this.posY > 7 ? 7 : this.posX + this.posY;
     y = x === 7 ? (this.posX + this.posY) % 7 : 0;
     while(x >= 0 && y <= 7) { // stop when (x < 0 OR y > 7)
       if (x !== this.posX && y !== this.posY)
@@ -222,7 +222,7 @@ class Queen extends ChessPiece {
       x++; y++;
     }
 
-    x = this.posX + this.posY > 7 ? 7 : this.posX + this.posY,
+    x = this.posX + this.posY > 7 ? 7 : this.posX + this.posY;
     y = x === 7 ? (this.posX + this.posY) % 7 : 0;
     while(x >= 0 && y <= 7) { // stop when (x < 0 OR y > 7)
       if (x !== this.posX && y !== this.posY)
@@ -234,7 +234,7 @@ class Queen extends ChessPiece {
 
 /****************************************************************/
 
-const initChessPieces = () => {
+export const initChessPieces = () => {
   return {
     wPawn0: new Pawn('w', 6, 0),
     wPawn1: new Pawn('w', 6, 1),

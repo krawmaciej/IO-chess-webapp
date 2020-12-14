@@ -1,5 +1,5 @@
 // initialize chess piece objects
-const initBoard = (cp) => {
+export const initBoard = (cp) => {
   const board = [];
   for (let i = 0; i < 8; i++)
     board[i] = [];
@@ -49,7 +49,7 @@ const initBoard = (cp) => {
 
 // drawing board
 // draw board
-const drawBoard = () => {
+export const drawBoard = () => {
   const container = document.getElementById('chessBoard');
   container.switcher = false;
   let toggle = true;
@@ -74,7 +74,7 @@ const drawBoard = () => {
   }  
 }
 // create chess board tile element
-const makeTile = (color, x, y) => {
+export const makeTile = (color, x, y) => {
   const elem = document.createElement('div');
   elem.classList.add('boardSquare', color ? 'boardSquareWhite' : 'boardSquareBlack' );
   elem.id = x + '_' + y;
@@ -85,13 +85,13 @@ const makeTile = (color, x, y) => {
 
 // drawing chess pieces
 // put chess pieces to starting positions
-const drawChessPieces = (board) => {
+export const drawChessPieces = (board) => {
   board.forEach(e => {
     e.forEach(insertChessPiece); // insertChessPiece func automatically runs and takes each element of 2D array as an argument (JS syntax)
   });
 }
 // tool func to insert each piece 
-const insertChessPiece = (piece) => {
+export const insertChessPiece = (piece) => {
   if (!(Object.keys(piece).length === 0 && piece.constructor === Object)) // this checks if 'piece' object is not empty
   {
     const elem = document.getElementById(piece.posX + '_' + piece.posY);
@@ -101,7 +101,7 @@ const insertChessPiece = (piece) => {
 }
 
 
-const moviePieceWithoutChecking = (move) => {
+export const movePieceWithoutChecking = (move) => {
 	// move visual chess piece
       move.to.innerHTML = move.from.innerHTML;
       move.from.innerHTML = "";
@@ -109,18 +109,18 @@ const moviePieceWithoutChecking = (move) => {
       move.to._cp = move.from._cp;      
       move.from._cp = false;
       // update current chess piece object
-      move.to._cp.active = false;
+      //move.to._cp.active = false;
       move.to._cp.setPositions(parseInt(move.to.id.substr(0,1)), parseInt(move.to.id.substr(2,1)));
 }
 
 // moving chess pieces
-const moveChessPiece = (elem) => {
+export const moveChessPiece = (elem) => {
   const parent = elem.parentElement;
   const activeElem = parent.activeElement;
 
   // if chess piece is no chosen, choose it and save relevant data
   if (elem._cp && !elem.parentElement.switcher) {    
-    elem._cp.active = true; // ??
+    //elem._cp.active = true; // ??
     elem.parentElement.switcher = true;
     elem.parentElement.activeElement = elem;
     elem.classList.toggle('active');
@@ -138,7 +138,7 @@ const moveChessPiece = (elem) => {
 		from: activeElem,//[parseInt(activeElem.id.substr(0, 1)), parseInt(activeElem.id.substr(2, 1))],
 		to: elem//[parseInt(elem.id.substr(0, 1)), parseInt(elem.id.substr(2, 1))]
 	  }
-      moviePieceWithoutChecking(move);
+      movePieceWithoutChecking(move);
 	  
 	  //console.log('move!!: ', move);
       /*
@@ -150,7 +150,7 @@ const moveChessPiece = (elem) => {
     }
      // set all temp data to original values
     activeElem.classList.toggle('active');
-    activeElem._cp.active = false;
+    //activeElem._cp.active = false;
     parent.switcher = false;
   }  
 }

@@ -1,11 +1,25 @@
-import { auth } from '../firebase/firebase';
-import './play.css';
+import React from 'react';
+import { auth } from '../firebase/firebase.js';
+import { initChessPieces } from './chess.js';
+import { initBoard, drawBoard, drawChessPieces } from './chessboard.js';
+import './chessboard.css';
 
-export default function Play() {
-  return (
-    <div class="board">
-      <p>Logged in as {auth().currentUser.email}</p>
-      <iframe title="cb" width="1200" height="1200" src="chessboard.html"></iframe>
-    </div>
-  );
-};
+export default class Play extends React.Component {
+
+  render() {
+    return (
+      <div class="board">
+        <p>Logged in as {auth().currentUser.email}</p>
+        <div id="chessBoard"> </div>
+      </div>
+    );
+  }
+
+  componentDidMount() {
+    const chessPieces = initChessPieces();
+    const chessBoard = initBoard(chessPieces);
+
+    drawBoard();
+    drawChessPieces(chessBoard);
+  }
+}

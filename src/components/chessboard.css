@@ -1,16 +1,13 @@
-body {
-    margin: 0;
-    padding: 0;
-    background: white;
+html, body {
+    width: 100%;
+    height: 100%;
 }
+
 #chessBoard {
     border: 1px solid #333;
     padding: 0;
-    height: 800px;
-    width: 800px;
-    transform: translate(-10%, -10%);
-    margin-top: 10%;
-    margin-left: 10%;
+    height: 600px;
+    width: 600px;
     overflow: hidden;
     border-radius: 4px;
     background: url(https://icon-library.net/images/spinner-icon-gif/spinner-icon-gif-10.jpg);
@@ -19,13 +16,14 @@ body {
 }
 
 .boardSquare {
+    content: ".";
     float:left;
-    font-size:80px;
+    font-size:60px;
     display:flex;
     align-items:center; 
     justify-content:center; 
-    width:100px; 
-    height:100px;
+    width:75px;
+    height:75px;
     cursor: pointer;
 }
 
