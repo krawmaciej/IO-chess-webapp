@@ -6,8 +6,8 @@ html, body {
 #chessBoard {
     border: 1px solid #333;
     padding: 0;
-    height: 600px;
-    width: 600px;
+    height: 100%;
+    width: 100%;
     overflow: hidden;
     border-radius: 4px;
     background: url(https://icon-library.net/images/spinner-icon-gif/spinner-icon-gif-10.jpg);
@@ -16,23 +16,29 @@ html, body {
 }
 
 .boardSquare {
-    content: ".";
+    user-select: none;
     float:left;
-    font-size:60px;
+    font-size:5vw;
     display:flex;
     align-items:center; 
     justify-content:center; 
-    width:75px;
-    height:75px;
+    width:12.5%;
+    height:12.5%;
     cursor: pointer;
 }
 
 .boardSquareWhite {    
     background: #f0d9b5; 
+    color: #f0d9b5;
 }
 
 .boardSquareBlack {    
     background: #b58863; 
+    color: #b58863;
+}
+
+.piece {
+    color: #000000;
 }
 
 .active {

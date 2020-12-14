@@ -1,3 +1,4 @@
+const EMPTY_TILE = '.';
 // initialize chess piece objects
 export const initBoard = (cp) => {
   const board = [];
@@ -78,6 +79,7 @@ export const makeTile = (color, x, y) => {
   const elem = document.createElement('div');
   elem.classList.add('boardSquare', color ? 'boardSquareWhite' : 'boardSquareBlack' );
   elem.id = x + '_' + y;
+  elem.innerHTML = EMPTY_TILE; // draw tiles containing empty char in div so that board can be resizable
 
   return elem;
 }
@@ -96,6 +98,7 @@ export const insertChessPiece = (piece) => {
   {
     const elem = document.getElementById(piece.posX + '_' + piece.posY);
     elem._cp = piece;
+    elem.classList.toggle('piece'); // make piece visible
     elem.innerHTML = piece.code;
   }
 }
@@ -103,14 +106,17 @@ export const insertChessPiece = (piece) => {
 
 export const movePieceWithoutChecking = (move) => {
 	// move visual chess piece
-      move.to.innerHTML = move.from.innerHTML;
-      move.from.innerHTML = "";
-      // move chess piece objects assigned to element 
-      move.to._cp = move.from._cp;      
-      move.from._cp = false;
-      // update current chess piece object
-      //move.to._cp.active = false;
-      move.to._cp.setPositions(parseInt(move.to.id.substr(0,1)), parseInt(move.to.id.substr(2,1)));
+  move.to.innerHTML = move.from.innerHTML;
+  move.from.innerHTML = EMPTY_TILE;
+  // change colors of visual pieces (display only pieces)
+  move.to.classList.toggle('piece');
+  move.from.classList.toggle('piece');
+  // move chess piece objects assigned to element 
+  move.to._cp = move.from._cp;      
+  move.from._cp = false;
+  // update current chess piece object
+  //move.to._cp.active = false;
+  move.to._cp.setPositions(parseInt(move.to.id.substr(0,1)), parseInt(move.to.id.substr(2,1)));
 }
 
 // moving chess pieces
@@ -132,7 +138,7 @@ export const moveChessPiece = (elem) => {
   // check if chess piece is chosen, if yes, try to move it
   else if (parent.switcher && activeElem) {    
     // check is new tile and empty, if yes, move chess piece there   
-    if (!elem._cp && elem.innerHTML === '' && activeElem._cp.moveIsPossible(elem.id)) {
+    if (!elem._cp && elem.innerHTML === EMPTY_TILE && activeElem._cp.moveIsPossible(elem.id)) {
 	  // get move to send it to other player
 	  var move = {
 		from: activeElem,//[parseInt(activeElem.id.substr(0, 1)), parseInt(activeElem.id.substr(2, 1))],
