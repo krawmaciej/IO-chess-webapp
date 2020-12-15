@@ -272,6 +272,9 @@ export const initChessPieces = () => {
   }
 }
 
-export const chessColors = ['w', 'b']; // table of chess player colors
+export const CHESS_COLORS = { // chess color enum
+  WHITE: 0,
+  BLACK: 1
+};
 
 // export { initBoard, initChessPieces }

@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { auth, database } from "../firebase/firebase";
 
+// userData
+import { userCachedData } from '../user/userData';
+
 export default class SignUp extends Component {
 
   constructor() {
@@ -24,14 +27,18 @@ export default class SignUp extends Component {
   async handleSubmit(event) {
     event.preventDefault();
     this.setState({ error: "" });
+
     auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
     .then((user) => { // signed up and in correctly
-      console.log("uregi: ", user.user.uid);
+      //console.log("uregi: ", user.user.uid);
+      var userData = user.user;
+      // prepare cached data to be inserted
+      userCachedData.uid = userData.uid;
+      userCachedData.email = userData.email;
+      userCachedData.isLoggedIn = true;
+
       var usersRef = database().ref("users"); // get db connection to /users
-      usersRef.child(user.user.uid).set({
-        email: user.user.email,
-        isLoggedIn: true,
-      })
+      usersRef.child(userData.uid).set(userCachedData); // put cached data into database
     })
     .catch((error) => { // couldn't sign up
       this.setState({ error: error.message });

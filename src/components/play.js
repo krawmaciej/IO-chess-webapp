@@ -1,7 +1,7 @@
 import React from 'react';
 import { initChessPieces } from '../chess/chess.js';
 import { initBoard, drawBoard, drawChessPieces } from '../chess/chessboard.js';
-import { userData } from '../user/userData';
+import { userCachedData } from '../user/userData';
 import '../chess/chessboard.css';
 import './play.css';
 
@@ -10,9 +10,9 @@ export default class Play extends React.Component {
   render() {
     return (
       <div class="mainwindow">
-        <p>Logged in as {userData.email}</p>
-        <p>uid is {userData.uid}</p> {/* TODO: uid for tests, remove later*/}
-        <p>gid is {userData.gameId}</p> {/* TODO: gid for tests, remove later*/}
+        <p>Logged in as {userCachedData.email}</p>
+        <p>uid is {userCachedData.uid}</p> {/* TODO: uid for tests, remove later*/}
+        <p>gid is {userCachedData.gameId}</p> {/* TODO: gid for tests, remove later*/}
         <div class="gameboard">
           <div id="chessBoard"> </div>
         </div>

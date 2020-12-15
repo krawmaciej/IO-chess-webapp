@@ -1,16 +1,16 @@
 import { Link, useHistory } from "react-router-dom";
-import { userData } from '../user/userData';
-import { chessColors } from '../chess/chess';
+import { userCachedData } from '../user/userData';
+import { CHESS_COLORS } from '../chess/chess';
 import { database } from '../firebase/firebase';
 
 export default function Home() {
   var hello = null; // display page accordingly to user logged in state
-  if (userData.isLoggedIn) {
+  if (userCachedData.isLoggedIn) {
     hello = (
       <div>
-        <p>Logged in as {userData.email}</p>
-        <p>uid is {userData.uid}</p> {/* TODO: uid for tests, remove later*/}
-        <p>gid is {userData.gameId}</p> {/* TODO: gid for tests, remove later*/}
+        <p>Logged in as {userCachedData.email}</p>
+        <p>uid is {userCachedData.uid}</p> {/* TODO: uid for tests, remove later*/}
+        <p>gid is {userCachedData.gameId}</p> {/* TODO: gid for tests, remove later*/}
         <button onClick={playGame}>Play</button>
       </div>
     );
@@ -27,7 +27,7 @@ export default function Home() {
 
   const history = useHistory(); // react hooks
   function playGame() {
-    if (userData.gameId === "") { // create new game
+    if (userCachedData.gameId === "") { // create new game
       createGame(history);
     } else { // player is already in a game
       goToGame(history);
@@ -45,28 +45,34 @@ export default function Home() {
 }
 
 function createGame(history) {
+  const newGame = { // game state to be pushed into database
+    whitePlayerUid: "",
+    blackPlayerUid: "",
+    activePlayerColor: CHESS_COLORS.WHITE,
+    winner: ""
+  };
+
   const colorIndex =  Math.floor(Math.random() * 2); // randomize player's color
-    userData.color = chessColors[colorIndex]; // set player color
-    
-    const newGame = { // game state to be pushed into database
-      player1: {
-        uid: userData.uid,
-        color: userData.color
-      },
-      player2: {
-        uid: "",
-        color: ""
-      }
-    };
-  
-    const game = database().ref("games").push();
-    userData.gameId = game.key; // set user gid
-  
-    game.set(newGame).then(() => {
-      history.push("/play");
-    }, (err) => {
-      throw err;
-    });
+
+  if (colorIndex === CHESS_COLORS.WHITE) {
+    newGame.whitePlayerUid = userCachedData.uid; // make player a white player
+    userCachedData.color = CHESS_COLORS.WHITE; // set player color to white
+  } else {
+    newGame.blackPlayerUid = userCachedData.uid; // make player a black player
+    userCachedData.color = CHESS_COLORS.BLACK; // set player color to black
+  }
+
+  const gameRef = database().ref("games").push();
+  userCachedData.gameId = gameRef.key; // set user gid
+
+  const loggedUserRef = database().ref("users").child(userCachedData.uid);
+  loggedUserRef.set(userCachedData); // update user data on database
+
+  gameRef.set(newGame).then(() => {
+    history.push("/play");
+  }, (err) => {
+    throw err;
+  });
 }
 
 function goToGame(history) {
