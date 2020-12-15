@@ -14,6 +14,8 @@ import CreateAccount from './components/createAccount'
 import Play from './components/play'
 // firebase
 import { auth } from './firebase/firebase'
+// user
+import { userData, resetUserData } from './user/userData.js';
 // styles
 import "./App.css";
 
@@ -54,34 +56,26 @@ function GuestRoute({ component: Component, isLoggedIn, ...rest }) {
 export default class App extends Component {
   constructor() {
     super();
-    this.state = {
-      isLoggedIn: false,
-      uid: "",
-      gameId: "",
-      onAuthFinished: false // taki hack żeby poczekać na skończenie dziłania funkcji auth().onAuthStateChanged
-    };
+    this.state = { userData };
   }
 
   componentDidMount() {
+    console.log("udatafirst: ", userData);
     auth().onAuthStateChanged(user => {
       if (user) {
-        this.setState({
-          isLoggedIn: true,
-          uid: user.uid,
-          onAuthFinished: true
-        });
+        userData.isLoggedIn = true;
+        userData.uid = user.uid;
+        userData.email = user.email;
       } else {
-        this.setState({
-          isLoggedIn: false,
-          uid: "",
-          onAuthFinished: true
-        });
+        resetUserData(userData);
       }
+      userData.onAuthFinished = true; // taki hack żeby poczekać na skończenie dziłania funkcji auth().onAuthStateChanged
+      this.setState({ userData }); // refresh render
     });
   }
 
   render() {
-    if (this.state.onAuthFinished === false) {
+    if (this.state.userData.onAuthFinished === false) {
       return null;
     } else { 
       return (
@@ -90,17 +84,17 @@ export default class App extends Component {
             <Route exact path="/" component={Home} />
             <UserRoute
               exact path="/play"
-              isLoggedIn={this.state.isLoggedIn}
+              isLoggedIn={this.state.userData.isLoggedIn}
               component={Play}
             />
             <GuestRoute
               exact path="/createAccount"
-              isLoggedIn={this.state.isLoggedIn}
+              isLoggedIn={this.state.userData.isLoggedIn}
               component={CreateAccount}
             />
             <GuestRoute
               exact path="/login"
-              isLoggedIn={this.state.isLoggedIn}
+              isLoggedIn={this.state.userData.isLoggedIn}
               component={Login}
             />
           </Switch>

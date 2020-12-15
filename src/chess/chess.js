@@ -272,6 +272,6 @@ export const initChessPieces = () => {
   }
 }
 
-
+export const chessColors = ['w', 'b']; // table of chess player colors
 
 // export { initBoard, initChessPieces }

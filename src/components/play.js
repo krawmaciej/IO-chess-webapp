@@ -1,8 +1,8 @@
 import React from 'react';
-import { auth } from '../firebase/firebase.js';
-import { initChessPieces } from './chess.js';
-import { initBoard, drawBoard, drawChessPieces } from './chessboard.js';
-import './chessboard.css';
+import { initChessPieces } from '../chess/chess.js';
+import { initBoard, drawBoard, drawChessPieces } from '../chess/chessboard.js';
+import { userData } from '../user/userData';
+import '../chess/chessboard.css';
 import './play.css';
 
 export default class Play extends React.Component {
@@ -10,7 +10,9 @@ export default class Play extends React.Component {
   render() {
     return (
       <div class="mainwindow">
-        <p>Logged in as {auth().currentUser.email}</p>
+        <p>Logged in as {userData.email}</p>
+        <p>uid is {userData.uid}</p> {/* TODO: uid for tests, remove later*/}
+        <p>gid is {userData.gameId}</p> {/* TODO: gid for tests, remove later*/}
         <div class="gameboard">
           <div id="chessBoard"> </div>
         </div>

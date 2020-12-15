@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { auth } from "../firebase/firebase";
+import { auth, database } from "../firebase/firebase";
 
 export default class SignUp extends Component {
 
@@ -24,14 +24,18 @@ export default class SignUp extends Component {
   async handleSubmit(event) {
     event.preventDefault();
     this.setState({ error: "" });
-    try {
-      await auth().createUserWithEmailAndPassword(
-        this.state.email,
-        this.state.password
-      );
-    } catch (error) {
+    auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+    .then((user) => { // signed up and in correctly
+      console.log("uregi: ", user.user.uid);
+      var usersRef = database().ref("users"); // get db connection to /users
+      usersRef.child(user.user.uid).set({
+        email: user.user.email,
+        isLoggedIn: true,
+      })
+    })
+    .catch((error) => { // couldn't sign up
       this.setState({ error: error.message });
-    }
+    });
   }
 
   render() {
