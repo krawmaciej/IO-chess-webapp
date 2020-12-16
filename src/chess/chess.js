@@ -40,11 +40,11 @@ class Pawn extends ChessPiece {
     super(color, posX, posY);
     
     this.type = 'Pawn';
-    this.code = this.color === 0 ? "&#9817;" : "&#9823;";
+    this.code = this.color === CHESS_COLORS.WHITE ? "&#9817;" : "&#9823;";
   }
 
   calculateMoves() {
-    if (this.color !== 0)
+    if (this.color !== CHESS_COLORS.WHITE)
       return;
     // clear old data (bad place to do it, I know)
     this.possibleMoves.splice(0);
@@ -65,11 +65,11 @@ class Rook extends ChessPiece {
     super(color, posX, posY);
 
     this.type = 'Rook';
-    this.code = this.color === 0 ? '&#9814' : '&#9820';
+    this.code = this.color === CHESS_COLORS.WHITE ? '&#9814' : '&#9820';
   }
 
   calculateMoves() {
-    if (this.color !== 0)
+    if (this.color !== CHESS_COLORS.WHITE)
       return;
     // clear old data (bad place to do it, I know)
     this.possibleMoves.splice(0);
@@ -89,11 +89,11 @@ class Knight extends ChessPiece {
     super(color, posX, posY);
 
     this.type = 'Knight';
-    this.code = this.color === 0 ? '&#9816' : '&#9822';
+    this.code = this.color === CHESS_COLORS.WHITE ? '&#9816' : '&#9822';
   }
 
   calculateMoves() {
-    if (this.color !== 0)
+    if (this.color !== CHESS_COLORS.WHITE)
       return;
     // clear old data (bad place to do it, I know)
     this.possibleMoves.splice(0);
@@ -122,11 +122,11 @@ class Bishop extends ChessPiece {
     super(color, posX, posY);
 
     this.type = 'Bishop';
-    this.code = this.color === 0 ? '&#9815' : '&#9821';
+    this.code = this.color === CHESS_COLORS.WHITE ? '&#9815' : '&#9821';
   }
 
   calculateMoves() {
-    if (this.color !== 0)
+    if (this.color !== CHESS_COLORS.WHITE)
       return;
     // clear old data (bad place to do it, I know)
     this.possibleMoves.splice(0);
@@ -166,11 +166,11 @@ class King extends ChessPiece {
     super(color, posX, posY);
 
     this.type = 'King';
-    this.code = this.color === 0 ? '&#9812' : '&#9818'; 
+    this.code = this.color === CHESS_COLORS.WHITE ? '&#9812' : '&#9818'; 
   }
 
   calculateMoves() {
-    if (this.color !== 0)
+    if (this.color !== CHESS_COLORS.WHITE)
       return;
     // clear old data (bad place to do it, I know)
     this.possibleMoves.splice(0);
@@ -194,11 +194,11 @@ class Queen extends ChessPiece {
     super(color, posX, posY);
 
     this.type = 'Queen';
-    this.code = this.color === 0 ? '&#9813' : '&#9819';
+    this.code = this.color === CHESS_COLORS.WHITE ? '&#9813' : '&#9819';
   }
 
   calculateMoves() {
-    if (this.color !== 0)
+    if (this.color !== CHESS_COLORS.WHITE)
       return;
     // clear old data (bad place to do it, I know)
     this.possibleMoves.splice(0);
@@ -237,39 +237,39 @@ class Queen extends ChessPiece {
 // initial board state for every chest match
 export const initChessPieces = () => {
   return {
-    wPawn0: new Pawn(0, 6, 0),
-    wPawn1: new Pawn(0, 6, 1),
-    wPawn2: new Pawn(0, 6, 2),
-    wPawn3: new Pawn(0, 6, 3),
-    wPawn4: new Pawn(0, 6, 4),
-    wPawn5: new Pawn(0, 6, 5),
-    wPawn6: new Pawn(0, 6, 6),
-    wPawn7: new Pawn(0, 6, 7),
-    wRook0: new Rook(0, 7, 0),
-    wRook1: new Rook(0, 7, 7),
-    wKnight0: new Knight(0, 7, 1),
-    wKnight1: new Knight(0, 7, 6),
-    wBishop0: new Bishop(0, 7, 2),
-    wBishop1: new Bishop(0, 7, 5),
-    wKing: new King(0, 7, 4),
-    wQueen: new Queen(0, 7, 3),
+    wPawn0: new Pawn(CHESS_COLORS.WHITE, 6, 0),
+    wPawn1: new Pawn(CHESS_COLORS.WHITE, 6, 1),
+    wPawn2: new Pawn(CHESS_COLORS.WHITE, 6, 2),
+    wPawn3: new Pawn(CHESS_COLORS.WHITE, 6, 3),
+    wPawn4: new Pawn(CHESS_COLORS.WHITE, 6, 4),
+    wPawn5: new Pawn(CHESS_COLORS.WHITE, 6, 5),
+    wPawn6: new Pawn(CHESS_COLORS.WHITE, 6, 6),
+    wPawn7: new Pawn(CHESS_COLORS.WHITE, 6, 7),
+    wRook0: new Rook(CHESS_COLORS.WHITE, 7, 0),
+    wRook1: new Rook(CHESS_COLORS.WHITE, 7, 7),
+    wKnight0: new Knight(CHESS_COLORS.WHITE, 7, 1),
+    wKnight1: new Knight(CHESS_COLORS.WHITE, 7, 6),
+    wBishop0: new Bishop(CHESS_COLORS.WHITE, 7, 2),
+    wBishop1: new Bishop(CHESS_COLORS.WHITE, 7, 5),
+    wKing: new King(CHESS_COLORS.WHITE, 7, 4),
+    wQueen: new Queen(CHESS_COLORS.WHITE, 7, 3),
 
-    bPawn0: new Pawn(0, 1, 0),
-    bPawn1: new Pawn(0, 1, 1),
-    bPawn2: new Pawn(0, 1, 2),
-    bPawn3: new Pawn(0, 1, 3),
-    bPawn4: new Pawn(0, 1, 4),
-    bPawn5: new Pawn(0, 1, 5),
-    bPawn6: new Pawn(0, 1, 6),
-    bPawn7: new Pawn(0, 1, 7),
-    bRook0: new Rook(0, 0, 0),
-    bRook1: new Rook(0, 0, 7),
-    bKnight0: new Knight(0, 0, 1),
-    bKnight1: new Knight(0, 0, 6),
-    bBishop0: new Bishop(0, 0, 2),
-    bBishop1: new Bishop(0, 0, 5),
-    bKing: new King(0, 0, 4),
-    bQueen: new Queen(0, 0, 3)
+    bPawn0: new Pawn(CHESS_COLORS.BLACK, 1, 0),
+    bPawn1: new Pawn(CHESS_COLORS.BLACK, 1, 1),
+    bPawn2: new Pawn(CHESS_COLORS.BLACK, 1, 2),
+    bPawn3: new Pawn(CHESS_COLORS.BLACK, 1, 3),
+    bPawn4: new Pawn(CHESS_COLORS.BLACK, 1, 4),
+    bPawn5: new Pawn(CHESS_COLORS.BLACK, 1, 5),
+    bPawn6: new Pawn(CHESS_COLORS.BLACK, 1, 6),
+    bPawn7: new Pawn(CHESS_COLORS.BLACK, 1, 7),
+    bRook0: new Rook(CHESS_COLORS.BLACK, 0, 0),
+    bRook1: new Rook(CHESS_COLORS.BLACK, 0, 7),
+    bKnight0: new Knight(CHESS_COLORS.BLACK, 0, 1),
+    bKnight1: new Knight(CHESS_COLORS.BLACK, 0, 6),
+    bBishop0: new Bishop(CHESS_COLORS.BLACK, 0, 2),
+    bBishop1: new Bishop(CHESS_COLORS.BLACK, 0, 5),
+    bKing: new King(CHESS_COLORS.BLACK, 0, 4),
+    bQueen: new Queen(CHESS_COLORS.BLACK, 0, 3)
   }
 }
 
