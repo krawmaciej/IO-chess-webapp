@@ -92,21 +92,13 @@ export default class Play extends React.Component {
 
   playMoveOnBoard(data) {
     this.addMoveToState(data); // push move to state
-    const move = this.prepareMove(data); // get move tiles
-    movePieceWithoutChecking(move);
+    movePieceWithoutChecking(data);
   }
 
   addMoveToState(move) {
     var gameData = this.state.game;
     gameData.moves.push(move);
     this.setState({ game: gameData });
-  }
-
-  prepareMove(move) {
-    return {
-      from: document.getElementById(move.from),
-      to: document.getElementById(move.to)
-    };
   }
 
   updatePageActivePlayerColor(data) {

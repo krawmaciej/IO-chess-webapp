@@ -107,7 +107,8 @@ export const insertChessPiece = (piece) => {
 // It would be great if this function only took ids of moves so:
 // ex: {from: "6_6", to: "5_6"}, and then moving correct piece from to
 // however, for now it works so it can be left like that
-export const movePieceWithoutChecking = (move) => {
+export const movePieceWithoutChecking = (moveFromServer) => {
+  const move = prepareMove(moveFromServer); 
 	// move visual chess piece
   move.to.innerHTML = move.from.innerHTML;
   move.from.innerHTML = EMPTY_TILE;
@@ -115,11 +116,18 @@ export const movePieceWithoutChecking = (move) => {
   move.to.classList.toggle('piece');
   move.from.classList.toggle('piece');
   // move chess piece objects assigned to element 
-  move.to._cp = move.from._cp;      
+  move.to._cp = move.from._cp;
   move.from._cp = false;
   // update current chess piece object
   //move.to._cp.active = false; // ?? this could be deleted but not sure
   move.to._cp.setPositions(parseInt(move.to.id.substr(0,1)), parseInt(move.to.id.substr(2,1)));
+}
+
+const prepareMove = (move) => {
+  return {
+    from: document.getElementById(move.from),
+    to: document.getElementById(move.to)
+  };
 }
 
 // moving chess pieces
@@ -140,17 +148,12 @@ export const moveChessPiece = (elem, moveListener) => {
   } 
   // check if chess piece is chosen, if yes, try to move it
   else if (parent.switcher && activeElem) {    
-    // check is new tile and empty, if yes, move chess piece there   
+    // check is new tile and empty, if yes, move chess piece there
     if (!elem._cp && elem.innerHTML === EMPTY_TILE && activeElem._cp.moveIsPossible(elem.id)) {
-      var move = { // move to be made
-        from: activeElem,
-        to: elem
-      }
-      moveListener({from: move.from.id, to: move.to.id}); // signal the listener about move
+      moveListener({from: activeElem.id, to: elem.id}); // signal the listener about move
       //movePieceWithoutChecking(move); // don't make a move, instead let server update the board with this move
-
-      console.log('move in chessboard move normal f(): ', move);
-  }
+      //console.log('move in chessboard move normal f(): ', move);
+    }
     // set all temp data to original values
     activeElem.classList.toggle('active'); // no active color on tile
     //activeElem._cp.active = false; // ?? this could be deleted but not sure
