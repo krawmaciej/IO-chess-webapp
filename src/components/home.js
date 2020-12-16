@@ -49,7 +49,8 @@ function createGame(history) {
     whitePlayerUid: "",
     blackPlayerUid: "",
     activePlayerColor: CHESS_COLORS.WHITE,
-    winner: ""
+    winner: "",
+    moves: [] // array of moves made by each player, also used to load current state of the board
   };
 
   const colorIndex =  Math.floor(Math.random() * 2); // randomize player's color

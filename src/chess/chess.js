@@ -234,6 +234,7 @@ class Queen extends ChessPiece {
 
 /****************************************************************/
 
+// initial board state for every chest match
 export const initChessPieces = () => {
   return {
     wPawn0: new Pawn('w', 6, 0),

@@ -1,3 +1,4 @@
+// const to mark an empty tile (without piece)
 const EMPTY_TILE = '.';
 // initialize chess piece objects
 export const initBoard = (cp) => {
@@ -50,7 +51,7 @@ export const initBoard = (cp) => {
 
 // drawing board
 // draw board
-export const drawBoard = () => {
+export const drawBoard = (moveListener) => { // pass a listener to be called when move was legal
   const container = document.getElementById('chessBoard');
   container.switcher = false;
   let toggle = true;
@@ -69,8 +70,8 @@ export const drawBoard = () => {
   
   for (let i = 0; i < tiles.length; i++) {
     tiles[i].addEventListener('click', () => {
-      moveChessPiece(tiles[i]);
-	  console.log('tiles children: ', tiles[i]._cp);
+      moveChessPiece(tiles[i], moveListener);
+	  //console.log('tiles children: ', tiles[i]._cp);
     });
   }  
 }
@@ -103,30 +104,32 @@ export const insertChessPiece = (piece) => {
   }
 }
 
-
+// It would be great if this function only took ids of moves so:
+// ex: {from: "6_6", to: "5_6"}, and then moving correct piece from to
+// however, for now it works so it can be left like that
 export const movePieceWithoutChecking = (move) => {
 	// move visual chess piece
   move.to.innerHTML = move.from.innerHTML;
   move.from.innerHTML = EMPTY_TILE;
-  // change colors of visual pieces (display only pieces)
+  // change colors of visual pieces (display pieces only)
   move.to.classList.toggle('piece');
   move.from.classList.toggle('piece');
   // move chess piece objects assigned to element 
   move.to._cp = move.from._cp;      
   move.from._cp = false;
   // update current chess piece object
-  //move.to._cp.active = false;
+  //move.to._cp.active = false; // ?? this could be deleted but not sure
   move.to._cp.setPositions(parseInt(move.to.id.substr(0,1)), parseInt(move.to.id.substr(2,1)));
 }
 
 // moving chess pieces
-export const moveChessPiece = (elem) => {
+export const moveChessPiece = (elem, moveListener) => {
   const parent = elem.parentElement;
   const activeElem = parent.activeElement;
 
   // if chess piece is no chosen, choose it and save relevant data
   if (elem._cp && !elem.parentElement.switcher) {    
-    //elem._cp.active = true; // ??
+    //elem._cp.active = true; // ?? this could be deleted but not sure
     elem.parentElement.switcher = true;
     elem.parentElement.activeElement = elem;
     elem.classList.toggle('active');
@@ -139,24 +142,18 @@ export const moveChessPiece = (elem) => {
   else if (parent.switcher && activeElem) {    
     // check is new tile and empty, if yes, move chess piece there   
     if (!elem._cp && elem.innerHTML === EMPTY_TILE && activeElem._cp.moveIsPossible(elem.id)) {
-	  // get move to send it to other player
-	  var move = {
-		from: activeElem,//[parseInt(activeElem.id.substr(0, 1)), parseInt(activeElem.id.substr(2, 1))],
-		to: elem//[parseInt(elem.id.substr(0, 1)), parseInt(elem.id.substr(2, 1))]
-	  }
-      movePieceWithoutChecking(move);
-	  
-	  //console.log('move!!: ', move);
-      /*
-      console.log('this element -->', elem);      // TEMP
-      console.log('prev(active) element -->', activeElem); // TEMP
-      console.log('this chesspiece -->', elem._cp); // TEMP
-      console.log('prev chesspiece -->', activeElem._cp); // TEMP
-	  */
-    }
-     // set all temp data to original values
-    activeElem.classList.toggle('active');
-    //activeElem._cp.active = false;
+      var move = { // move to be made
+        from: activeElem,
+        to: elem
+      }
+      moveListener({from: move.from.id, to: move.to.id}); // signal the listener about move
+      //movePieceWithoutChecking(move); // don't make a move, instead let server update the board with this move
+
+      console.log('move in chessboard move normal f(): ', move);
+  }
+    // set all temp data to original values
+    activeElem.classList.toggle('active'); // no active color on tile
+    //activeElem._cp.active = false; // ?? this could be deleted but not sure
     parent.switcher = false;
   }  
 }
