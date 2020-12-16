@@ -16,7 +16,7 @@ export default class Play extends React.Component {
         blackPlayerUid: "",
         activePlayerColor: "",
         winner: "",
-        moves: []
+        moves: [] // this is not used right now, but might be needed later, just caching data from server
       }
     };
   }
@@ -43,19 +43,19 @@ export default class Play extends React.Component {
     //   this.loadCurrentBoardState(data.val());
     // });
 
-    // get whole game data from server, load from it current board state
+    // at the beginning cache whole game data from server
     this.state.gameRef.once("value", data => {
-      this.loadGameData(data.val()); 
+      this.cacheGameData(data.val()); 
     });
 
     // listen to changes of active player's color
     this.state.gameRef.child("activePlayerColor").on("value", data => {
-      this.updatePageActivePlayerColor(data.val()); 
+      this.updatePageActivePlayerColor(data.val());
     });
 
-    // listen to changes on moves, load every move including opponent's recent move
-    this.state.gameRef.child("moves").on("value", data => {
-      this.updateMoves(data.val());
+    // listen to added moves, on start load each added move seperately (in order)
+    this.state.gameRef.child("moves").on("child_added", data => {
+      this.playMoveOnBoard(data.val());
     });
 
     const chessPieces = initChessPieces(); // get starting chess pieces positions
@@ -63,34 +63,43 @@ export default class Play extends React.Component {
 
     drawBoard(moveListener); // draw board and add listener to every piece/figure
     drawChessPieces(chessBoard); // draw added pieces on board
-
-    // const doc = document.getElementById("6_6");
-    // console.log(doc);
   }
 
-  loadGameData(data) {
+  // this function might be not needed
+  cacheGameData(data) {
     const gameData = {
       whitePlayerUid: data.whitePlayerUid,
       blackPlayerUid: data.blackPlayerUid,
       activePlayerColor: data.activePlayerColor,
       winner: data.winner,
-      moves: data.moves
+      moves: [] // cached in playMoveOnBoard()
     }
-    this.loadCurrentBoardState(gameData.moves);
     this.setState({ game: gameData });
     console.log("Game: ", this.state.game);
   }
 
   // load board state by replaying moves
-  loadCurrentBoardState(data) {
-    if (!data) {
-      return;
-    }
-    const movesSkipLastMove = data.slice(0, data.length - 1);
-    movesSkipLastMove.forEach( (element) => { // replay every move made until now (load current board state)
-      const move = this.prepareMove(element); // get move tiles
-      movePieceWithoutChecking(move);
-    });
+  // playMovesOnBoard(data) {
+  //   if (!data) {
+  //     return;
+  //   }
+  //   //const movesSkipLastMove = data.slice(0, data.length - 1);
+  //   data.forEach( (element) => { // replay every move made until now (load current board state)
+  //     const move = this.prepareMove(element); // get move tiles
+  //     movePieceWithoutChecking(move);
+  //   });
+  // }
+
+  playMoveOnBoard(data) {
+    this.addMoveToState(data); // push move to state
+    const move = this.prepareMove(data); // get move tiles
+    movePieceWithoutChecking(move);
+  }
+
+  addMoveToState(move) {
+    var gameData = this.state.game;
+    gameData.moves.push(move);
+    this.setState({ game: gameData });
   }
 
   prepareMove(move) {
@@ -101,33 +110,10 @@ export default class Play extends React.Component {
   }
 
   updatePageActivePlayerColor(data) {
-    //console.log("data only active color: ", data);
     var gameData = this.state.game;
     gameData.activePlayerColor = data;
     this.setState({ game: gameData });
-  }
-
-  updateMoves(data) {
-    this.updateStateWithMoves(data);
-    if (!data) {
-      return;
-    }
-    const mostRecentMove = data[data.length - 1];
-
-    // const thisPlayerMadeLastMove = mostRecentMove.color === userCachedData.color;
-    // if (thisPlayerMadeLastMove) {
-    //   return;
-    // }
-    // load last move
-    const move = this.prepareMove(mostRecentMove); // get move tiles
-    movePieceWithoutChecking(move);
-  }
-
-  updateStateWithMoves(moves) {
-    var gameData = this.state.game;
-    gameData.moves = moves;
-    this.setState({ game: gameData });
-  }
+  }  
 
   colorToText(color) {
     if (color === CHESS_COLORS.WHITE) {
@@ -150,7 +136,7 @@ const moveListener = function(move) {
     addNewMoveToMovesOnServer(data.val(), move, movesRef); // pass moves, new move and db reference
   });
 
-  console.log("listened move: ", move);
+  console.log("listened move from chessboard: ", move);
   //console.log("moves array", moves);
 }
 
