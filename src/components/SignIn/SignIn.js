@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { auth } from "../firebase/firebase";
+import { auth } from "../../firebase/firebase";
 
 export default class Login extends Component {
   constructor() {
@@ -64,7 +64,7 @@ export default class Login extends Component {
             <button className="btn btn-primary px-5" type="submit">Zaloguj!</button>
           </div>
           <p>
-            <Link to="/createAccount">Utwórz konto!</Link>
+            <Link to="/SignUp">Utwórz konto!</Link>
           </p>
         </form>
 

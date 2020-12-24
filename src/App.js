@@ -3,15 +3,14 @@ import React, { Component } from "react";
 import {
   Switch,
   BrowserRouter as Router,
-  Route,
-  Redirect
+  Route
 } from "react-router-dom";
 
 // components
-import Home from './components/home'
-import Login from './components/login'
-import CreateAccount from './components/createAccount'
-import Play from './components/play'
+import Home from './components/Home/Home'
+import SignIn from './components/SignIn/SignIn'
+import SignUp from './components/SignUp/SignUp'
+import Play from './components/Play/Play'
 // firebase
 import { auth, database } from './firebase/firebase'
 // user
@@ -20,39 +19,11 @@ import { userCachedData, resetUserData, loadUserDataFromServer } from './user/us
 import "./App.css";
 
 // custom routes, like react route
-function UserRoute({ component: Component, isLoggedIn, ...rest }) {
-  return (
-    <Route {...rest}
-      render = {
-        props => {
-          if (isLoggedIn === true) {
-            return (<Component {...props} />);
-          } else {
-            return (<Redirect to="/createAccount" />);
-          }
-        }
-      }
-    />
-  );
-}
-
-function GuestRoute({ component: Component, isLoggedIn, ...rest }) {
-  return (
-    <Route {...rest}
-      render = {
-        props => {
-          if (isLoggedIn === true) {
-            return (<Redirect to="/" />);
-          } else {
-            return (<Component {...props} />);
-          }
-       }
-      }
-    />
-  );
-}
+import GuestRoute from './routes/guestRoute';
+import UserRoute from './routes/userRoute';
 
 
+/* ********************************** */
 export default class App extends Component {
   constructor() {
     super();
@@ -63,17 +34,17 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    var callback = (data) => {
+    const callback = (data) => {
       loadUserDataFromServer(userCachedData, data);
-      console.log("udatafirst: ", userCachedData);
+      console.log("userDataFirst: ", userCachedData);
       // reload render
       this.setState({ onAuthFinished: true, userData: userCachedData }); // taki hack żeby poczekać na skończenie dziłania funkcji auth().onAuthStateChanged
     }
     auth().onAuthStateChanged(user => {
       // user logged in
       if (user) {
-        console.log(user.uid);
-        var loggedUserRef = database().ref("users").child(user.uid); // get userData from database
+        console.log('user id:  ' + user.uid);
+        const loggedUserRef = database().ref("users").child(user.uid); // get userData from database
         loggedUserRef.update({ isLoggedIn: true }); // set user as logged in    
         loggedUserRef.once("value", data => { 
           callback(data.val()); // wait for data from server and cache it
@@ -94,22 +65,27 @@ export default class App extends Component {
       return (
         <Router>
           <Switch>
+
             <Route exact path="/" component={Home} />
+
             <UserRoute
               exact path="/play"
               isLoggedIn={this.state.userData.isLoggedIn}
               component={Play}
             />
+
             <GuestRoute
-              exact path="/createAccount"
+              exact path="/SignUp"
               isLoggedIn={this.state.userData.isLoggedIn}
-              component={CreateAccount}
+              component={SignUp}
             />
+
             <GuestRoute
-              exact path="/login"
+              exact path="/SignIn"
               isLoggedIn={this.state.userData.isLoggedIn}
-              component={Login}
+              component={SignIn}
             />
+
           </Switch>
         </Router>
       );

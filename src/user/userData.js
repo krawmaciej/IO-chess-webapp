@@ -1,5 +1,5 @@
 // global unique user state
-export var userCachedData = {
+export const userCachedData = {
     isLoggedIn: false,
     uid: "",
     email: "",
@@ -15,10 +15,10 @@ export const resetUserData = (data) => {
     data.color = "";
 }
 
-export const loadUserDataFromServer = (user, onServer) => {
-    user.isLoggedIn = onServer.isLoggedIn;
-    user.uid = onServer.uid;
-    user.email = onServer.email;
-    user.gameId = onServer.gameId;
-    user.color = onServer.color;
+export const loadUserDataFromServer = (user, dataFromServer) => {
+    user.isLoggedIn = dataFromServer.isLoggedIn;
+    user.uid = dataFromServer.uid;
+    user.email = dataFromServer.email;
+    user.gameId = dataFromServer.gameId;
+    user.color = dataFromServer.color;
 }

@@ -1,10 +1,10 @@
 import React from 'react';
-import { initChessPieces, CHESS_COLORS } from '../chess/chess.js';
-import { initBoard, drawBoard, drawChessPieces, movePieceWithoutChecking } from '../chess/chessboard.js';
-import { database } from '../firebase/firebase';
-import { userCachedData } from '../user/userData';
-import '../chess/chessboard.css';
-import './play.css';
+import { initChessPieces, CHESS_COLORS } from '../../chess/chess.js';
+import { initBoard, drawBoard, drawChessPieces, movePieceWithoutChecking } from '../../chess/chessboard.js';
+import { database } from '../../firebase/firebase';
+import { userCachedData } from '../../user/userData';
+import '../../chess/chessboard.css';
+import './Play.css';
 
 export default class Play extends React.Component {
   constructor() {

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { auth, database } from "../firebase/firebase";
+import { auth, database } from "../../firebase/firebase";
 
 // userData
-import { userCachedData } from '../user/userData';
+import { userCachedData } from '../../user/userData';
 
 export default class SignUp extends Component {
 
@@ -74,7 +74,7 @@ export default class SignUp extends Component {
             <button className="btn btn-primary px-5" type="submit">Utwórz konto!</button>
           </div>
           <p>
-            <Link to="/login">Zaloguj się!</Link>
+            <Link to="/SignIn">Zaloguj się!</Link>
           </p>
         </form>
       </div>

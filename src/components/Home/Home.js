@@ -1,26 +1,26 @@
 import { Link, useHistory } from "react-router-dom";
-import { userCachedData } from '../user/userData';
-import { CHESS_COLORS } from '../chess/chess';
-import { database } from '../firebase/firebase';
+import { userCachedData } from '../../user/userData';
+import { CHESS_COLORS } from '../../chess/chess';
+import { database } from '../../firebase/firebase';
 
 export default function Home() {
-  var hello = null; // display page accordingly to user logged in state
+  let hello = null; // display page accordingly to user logged in state
   if (userCachedData.isLoggedIn) {
     hello = (
       <div>
         <p>Logged in as {userCachedData.email}</p>
         <p>uid is {userCachedData.uid}</p> {/* TODO: uid for tests, remove later*/}
         <p>gid is {userCachedData.gameId}</p> {/* TODO: gid for tests, remove later*/}
-        <button onClick={playGame}>Play</button>
+        <button onClick={playGame}>Play</button>        
       </div>
     );
   } else {
     hello = (
       <div>
         <p>Not logged in</p>
-        <Link to="/createAccount">Create an account</Link>
+        <Link to="/SignUp">Create an account</Link>
         <p>or</p>
-        <Link to="/login">Log in</Link>
+        <Link to="/SignIn">Log in</Link>
       </div>
     );
   }
