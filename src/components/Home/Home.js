@@ -1,7 +1,7 @@
 import { Link, useHistory } from "react-router-dom";
 import { userCachedData } from '../../user/userData';
 import { CHESS_COLORS } from '../../chess/chess';
-import { database } from '../../firebase/firebase';
+import { auth, database } from '../../firebase/firebase';
 
 export default function Home() {
   let hello = null; // display page accordingly to user logged in state
@@ -11,7 +11,8 @@ export default function Home() {
         <p>Logged in as {userCachedData.email}</p>
         <p>uid is {userCachedData.uid}</p> {/* TODO: uid for tests, remove later*/}
         <p>gid is {userCachedData.gameId}</p> {/* TODO: gid for tests, remove later*/}
-        <button onClick={playGame}>Play</button>        
+        <button onClick={playGame}>Play</button>
+        <button onClick={SignOut}>Wyloguj</button>
       </div>
     );
   } else {
@@ -44,6 +45,14 @@ export default function Home() {
   );
 }
 
+const SignOut = () => {
+  auth().signOut().then(function() {
+    console.log('success');
+    // Sign-out successful.
+  }).catch(console.log)
+  
+}
+
 function createGame(history) {
   const newGame = { // game state to be pushed into database
     whitePlayerUid: "",
@@ -53,15 +62,8 @@ function createGame(history) {
     moves: [] // array of moves made by each player, also used to load current state of the board
   };
 
-  const colorIndex =  Math.floor(Math.random() * 2); // randomize player's color
-
-  if (colorIndex === CHESS_COLORS.WHITE) {
-    newGame.whitePlayerUid = userCachedData.uid; // make player a white player
-    userCachedData.color = CHESS_COLORS.WHITE; // set player color to white
-  } else {
-    newGame.blackPlayerUid = userCachedData.uid; // make player a black player
-    userCachedData.color = CHESS_COLORS.BLACK; // set player color to black
-  }
+  newGame.whitePlayerUid = userCachedData.uid; // make player a white player
+  userCachedData.color = CHESS_COLORS.WHITE; // set player color to white
 
   const gameRef = database().ref("games").push();
   userCachedData.gameId = gameRef.key; // set user gid

@@ -18,7 +18,7 @@ html, body {
 .boardSquare {
     user-select: none;
     float:left;
-    font-size:4vw;
+    font-size: 60px;/* 4vw; */
     display:flex;
     align-items:center; 
     justify-content:center; 
@@ -29,17 +29,17 @@ html, body {
 
 .boardSquareWhite {    
     background: #f0d9b5; 
-    color: #f0d9b5;
+    /* color: #f0d9b5; */
 }
 
 .boardSquareBlack {    
     background: #b58863; 
-    color: #b58863;
+    /* color: #b58863; */
 }
 
-.piece {
+/* .piece {
     color: #000000;
-}
+} */
 
 .active {
     background: magenta;

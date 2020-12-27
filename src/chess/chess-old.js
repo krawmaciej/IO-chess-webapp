@@ -1,28 +1,12 @@
 // module "chess.js"
-/* eslint-disable no-unused-expressions */
-
-const STATIC_ID = {
-  'Pawn': 0,
-  'Rook': 0,
-  'Knight': 0,
-  'Bishop': 0,
-  'Queen': 0,
-  'King': 0
-}
-
-const CHESS_COLORS = { // chess color enum
-  WHITE: 'white',
-  BLACK: 'black'
-};
 
 class ChessPiece { // treat it as an abstract class
   constructor(color, posX, posY) {
-    this.id;
     this.color = color;    
     this.posX = posX;
     this.posY = posY;
     this.type = '';
-    // this.active = false;
+    this.active = false;
     this.startPosX = posX;
     this.startPosY = posY;
 
@@ -57,30 +41,23 @@ class Pawn extends ChessPiece {
     
     this.type = 'Pawn';
     this.code = this.color === CHESS_COLORS.WHITE ? "&#9817;" : "&#9823;";
-    this.id = this.type + STATIC_ID[this.type];
-    STATIC_ID[this.type]++;
   }
 
   calculateMoves() {
+    if (this.color !== CHESS_COLORS.WHITE)
+      return;
     // clear old data (bad place to do it, I know)
     this.possibleMoves.splice(0);
 
-    if (this.color === CHESS_COLORS.WHITE) {
-      // logic for white pawns
-      this.possibleMoves.push([ this.posX - 1, this.posY ]);
-      if (this.posX === this.startPosX && this.posY === this.startPosY)
-        this.possibleMoves.push([ this.posX - 2, this.posY ]);      
-    }
-    else if (this.color === CHESS_COLORS.BLACK) {
-      // logic for black pawns
-      this.possibleMoves.push([ this.posX + 1, this.posY ]);
-      if (this.posX === this.startPosX && this.posY === this.startPosY)
-        this.possibleMoves.push([ this.posX + 2, this.posY ]);  
-    } 
-    else {
-      console.log('Error: wrong color!');
-    }   
-  }  
+    // actual logic
+    this.possibleMoves.push([ this.posX - 1, this.posY ]);
+    if (this.posX === this.startPosX && this.posY === this.startPosY)
+      this.possibleMoves.push([ this.posX - 2, this.posY ]);      
+    
+  }
+
+
+  
 }
 
 class Rook extends ChessPiece {
@@ -89,21 +66,21 @@ class Rook extends ChessPiece {
 
     this.type = 'Rook';
     this.code = this.color === CHESS_COLORS.WHITE ? '&#9814' : '&#9820';
-    this.id = this.type + STATIC_ID[this.type];
-    STATIC_ID[this.type]++;
   }
 
   calculateMoves() {
+    if (this.color !== CHESS_COLORS.WHITE)
+      return;
     // clear old data (bad place to do it, I know)
     this.possibleMoves.splice(0);
 
-    // logic for white & black
+    // actual logic
     for (let i = 0; i < 8; i++) {
       if (i !== this.posX)
         this.possibleMoves.push([ i, this.posY ]);
       if (i !== this.posY)
         this.possibleMoves.push([ this.posX, i]);
-    }    
+    }
   }
 }
 
@@ -113,15 +90,15 @@ class Knight extends ChessPiece {
 
     this.type = 'Knight';
     this.code = this.color === CHESS_COLORS.WHITE ? '&#9816' : '&#9822';
-    this.id = this.type + STATIC_ID[this.type];
-    STATIC_ID[this.type]++;
   }
 
   calculateMoves() {
+    if (this.color !== CHESS_COLORS.WHITE)
+      return;
     // clear old data (bad place to do it, I know)
     this.possibleMoves.splice(0);
 
-    // actual logic for white & black
+    // actual logic
     const moves = [];
     moves.push(
       [this.posX + 2, this.posY - 1],
@@ -146,12 +123,11 @@ class Bishop extends ChessPiece {
 
     this.type = 'Bishop';
     this.code = this.color === CHESS_COLORS.WHITE ? '&#9815' : '&#9821';
-    this.id = this.type + STATIC_ID[this.type];
-    STATIC_ID[this.type]++;
   }
 
   calculateMoves() {
-    
+    if (this.color !== CHESS_COLORS.WHITE)
+      return;
     // clear old data (bad place to do it, I know)
     this.possibleMoves.splice(0);
 
@@ -169,7 +145,7 @@ class Bishop extends ChessPiece {
     }
 
     // down-left to up-right
-    x = this.posX + this.posY > 7 ? 7 : this.posX + this.posY,
+    x = this.posX + this.posY > 7 ? 7 : this.posX + this.posY;
     y = x === 7 ? (this.posX + this.posY) % 7 : 0;
     while(x >= 0 && y <= 7) { // stop when (x < 0 OR y > 7)
       if (x !== this.posX && y !== this.posY)
@@ -191,15 +167,15 @@ class King extends ChessPiece {
 
     this.type = 'King';
     this.code = this.color === CHESS_COLORS.WHITE ? '&#9812' : '&#9818'; 
-    this.id = this.type + STATIC_ID[this.type];
-    STATIC_ID[this.type]++;
   }
 
   calculateMoves() {
+    if (this.color !== CHESS_COLORS.WHITE)
+      return;
     // clear old data (bad place to do it, I know)
     this.possibleMoves.splice(0);
 
-    // actual logic for black & white
+    // actual logic
     const moves = [];
     for (let i = -1; i <= 1; i++) {
       moves.push( [this.posX + 1, this.posY + i] );
@@ -219,15 +195,15 @@ class Queen extends ChessPiece {
 
     this.type = 'Queen';
     this.code = this.color === CHESS_COLORS.WHITE ? '&#9813' : '&#9819';
-    this.id = this.type + STATIC_ID[this.type];
-    STATIC_ID[this.type]++;
   }
 
   calculateMoves() {
+    if (this.color !== CHESS_COLORS.WHITE)
+      return;
     // clear old data (bad place to do it, I know)
     this.possibleMoves.splice(0);
 
-    // actual logic for black & white
+    // actual logic
 
     // rook moves
     for (let i = 0; i < 8; i++) {
@@ -246,7 +222,7 @@ class Queen extends ChessPiece {
       x++; y++;
     }
 
-    x = this.posX + this.posY > 7 ? 7 : this.posX + this.posY,
+    x = this.posX + this.posY > 7 ? 7 : this.posX + this.posY;
     y = x === 7 ? (this.posX + this.posY) % 7 : 0;
     while(x >= 0 && y <= 7) { // stop when (x < 0 OR y > 7)
       if (x !== this.posX && y !== this.posY)
@@ -256,11 +232,10 @@ class Queen extends ChessPiece {
   }
 }
 
-// initialize chess piece objects
-const initChessPieces = () => {
-  for (var e in STATIC_ID) {
-    STATIC_ID[e] = 0;
-  }
+/****************************************************************/
+
+// initial board state for every chest match
+export const initChessPieces = () => {
   return {
     wPawn0: new Pawn(CHESS_COLORS.WHITE, 6, 0),
     wPawn1: new Pawn(CHESS_COLORS.WHITE, 6, 1),
@@ -298,4 +273,9 @@ const initChessPieces = () => {
   }
 }
 
-export { CHESS_COLORS, initChessPieces };
+export const CHESS_COLORS = { // chess color enum
+  WHITE: 'white',
+  BLACK: 'black'
+};
+
+// export { initBoard, initChessPieces }

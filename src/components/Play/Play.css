@@ -4,13 +4,14 @@
     margin: auto;
 }
 .gameboard {
-    width: 50%;
+    width: 650px; /*50%; */
     float: left;
-    height: 50%;
+    height: 650px; /* 50%; */
 }
 
 .matchinfo {
-    width: 50%;
-    float: right;
+    width: 200px; /* 50%; */
+    float: left;
+    margin-left: 20px;
     height: 100%;
 }

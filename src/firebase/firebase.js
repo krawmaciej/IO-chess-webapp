@@ -1,5 +1,20 @@
 import firebase from 'firebase';
 
+
+/*
+-----Account info-----
+login:  IO.chessonline.CGK
+passwd:  4kuGNbsqBM
+
+-----Players-----
+player1@emial.com
+qwerty
+-----
+player2@email.com
+qwerty
+-----
+*/
+
 const firebaseConfig = {
   apiKey: "AIzaSyAbiN8dJGYZf3WKMSKS-eh7THGNiVOdjyE",
   authDomain: "io-chess-online.firebaseapp.com",
@@ -17,11 +32,6 @@ export const auth = firebase.auth;
 export const database = firebase.database;
 
 
-/*
------Account info-----
-login:  IO.chessonline.CGK
-passwd:  4kuGNbsqBM
-*/
 /* 
 const firebaseConfig = {
   apiKey: "AIzaSyCREYaGIKnRdtJWqF4flyWOnmkTyL_ftz0", // process.env.REACT_APP_FBASE_API_KEY,
