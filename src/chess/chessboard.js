@@ -79,6 +79,9 @@ const makeTile = (color, x, y) => {
   elem.classList.add('boardSquare', color ? 'boardSquareWhite' : 'boardSquareBlack' );
   elem.id = x + '_' + y;
 
+  // FOR TESTING
+  elem.title = x + ',' + y;
+
   return elem;
 }
 
@@ -117,7 +120,6 @@ const moveChessPiece = (targetElem, callback) => {
   const board = container.board;
   const props = container.props;
 
-  console.log(props);
   // if chess piece is not chosen, choose it and save relevant data
   if (targetElem.chessPiece && 
       !targetElem.parentElement.switcher && 
@@ -129,31 +131,37 @@ const moveChessPiece = (targetElem, callback) => {
     targetElem.classList.toggle('active');
 
     // calculate possible moves for chess piece
-    targetElem.chessPiece.calculateMoves();
-    console.log('possible moves --> ', targetElem.chessPiece.possibleMoves); // TEMP
+    targetElem.chessPiece.calculateMoves(container.board);
+    console.log('possible moves --> ', targetElem.chessPiece.regularMoves); // TEMP
+    console.log('possible attacks --> ', targetElem.chessPiece.attackMoves);
   } 
   // check if chess piece is chosen, if yes, try to move it
   else if (container.switcher && activeElem) 
   {    
     // check is new tile and empty, if yes, move chess piece there   
-    if (!targetElem.chessPiece && 
-        targetElem.innerHTML === '' && 
+    if (!targetElem.chessPiece &&  
         activeElem.chessPiece.moveIsPossible(targetElem.id)) 
-    { 
-      
+    {      
       // update board state matrix
+
       const activeElemId = parseElemId(activeElem);
       const targetElemId = parseElemId(targetElem);
-      //console.log(`${activeElemId.x},${activeElemId.y} --> ${targetElemId.x},${targetElemId.y}`);
-
       // set new position for a chess piece 
       board[activeElemId.x][activeElemId.y].setPositions(targetElemId.x, targetElemId.y);
-
+      
+      // if it's attack move
+      //   clear targetTile (from boardState and htmlBoard?)
+   
       // fancy js-way to swap elements in array (destructuring)
       [board[activeElemId.x][activeElemId.y], board[targetElemId.x][targetElemId.y]] = 
         [board[targetElemId.x][targetElemId.y], board[activeElemId.x][activeElemId.y]];    
 
       callback();
+    }
+    // if new tile is not empty 
+    else if (targetElem.chessPiece && targetElem.chessPiece.moveIsPossible(targetElem.id)) 
+    {
+      console.log(targetElem);
     }
     // set all temp data to original values
     container.switcher = false;
@@ -172,5 +180,6 @@ const parseElemId = e => {
     y: parseInt(e.id.substr(2,1))
   }
 }
+
 
 export { initBoard, drawBoard, drawChessPieces };
