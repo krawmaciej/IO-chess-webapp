@@ -276,13 +276,14 @@ class Knight extends ChessPiece {
     STATIC_ID[this.type]++;
   }
 
-  calculateMoves() {
+  calculateMoves(board) {
     // clear old data (bad place to do it, I know)
     this.regularMoves.splice(0);
+    this.attackMoves.splice(0);
 
-    // actual logic for white & black
-    const moves = [];
-    moves.push(
+    // actual logic
+    const knightMoves = [];
+    knightMoves.push(
       [this.posX + 2, this.posY - 1],
       [this.posX + 2, this.posY + 1],
       [this.posX - 2, this.posY - 1],
@@ -292,9 +293,15 @@ class Knight extends ChessPiece {
       [this.posX - 1, this.posY - 2],
       [this.posX - 1, this.posY + 2]
     );
-    moves.forEach(m => {
-      if (m[0] >= 0 && m[0] <= 7 && m[1] >= 0 && m[1] <= 7)
-        this.regularMoves.push([m[0], m[1]]);
+    knightMoves.forEach(m => {
+      const coords = XY(m[0], m[1]);
+      if (isWithinBound(coords)) {
+        const targetTile = board[coords.x][coords.y];
+        if (!targetTile) // target tile is empty)
+          this.regularMoves.push([coords.x, coords.y]);
+        else if (targetTile && targetTile.color !== this.color) // target tile has chess piece of oposite color
+          this.attackMoves.push([coords.x, coords.y]);
+      }
     });
   }
 }
@@ -434,6 +441,7 @@ class Queen extends ChessPiece {
     } */
   }
 }
+
 
 
 // initialize chess piece objects

@@ -65,7 +65,6 @@ export default class Play extends React.Component {
     // listen to changes on boardState
     this.state.gameRef.child('boardState').on('value', data => {
       this.updateBoardState(data.val());
-      //console.log('updated board: ', this.state.board);
       drawChessPieces(this.state.board, this.state.props); 
     }); 
 
@@ -139,17 +138,18 @@ const stringifyChessBoard = (board) => {
 
 const updateArray = (arrFromDb, arrToUpdate) => {
   const changedPositions = [];
+
   for (let i = 0; i < arrToUpdate.length; i++) {
     for (let j = 0; j < arrToUpdate[i].length; j++) {
-      if (arrToUpdate[i][j].id && arrToUpdate[i][j].id !== arrFromDb[i][j])
+      if (arrToUpdate[i][j] && arrToUpdate[i][j].id !== arrFromDb[i][j])
         changedPositions.push(arrToUpdate[i][j]);
     }    
   }
-  // console.log('whats changed: ', changedPositions);
+
   changedPositions.forEach(obj => {
+    let destinationIndexX, destinationIndexY;
     let currentIndexX = obj.posX, 
         currentIndexY = obj.posY;
-    let destinationIndexX, destinationIndexY;
 
     for (let i = 0; i < arrFromDb.length; i++) {
       for (let j = 0; j < arrFromDb[i].length; j++) {
@@ -160,9 +160,12 @@ const updateArray = (arrFromDb, arrToUpdate) => {
       }
     }
 
-    arrToUpdate[destinationIndexX][destinationIndexY] = obj;
-    if (arrToUpdate[currentIndexX][currentIndexY].id === obj.id)
-      arrToUpdate[currentIndexX][currentIndexY] = false;
+    arrToUpdate[currentIndexX][currentIndexY] = false;
+    if (typeof(destinationIndexX) === 'number' && typeof(destinationIndexY) === 'number') {   
+      obj.setPositions(destinationIndexX, destinationIndexY);
+      arrToUpdate[destinationIndexX][destinationIndexY] = obj;
+    }
+
   });
 };
 

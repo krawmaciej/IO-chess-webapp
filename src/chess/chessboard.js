@@ -1,4 +1,4 @@
-import { CHESS_COLORS, initChessPieces } from './chess';
+import { initChessPieces } from './chess';
 // import { CHESS_COLORS } from '../../chess/chess.js';
 const initBoard = () => {
   const cp = initChessPieces();
@@ -139,8 +139,7 @@ const moveChessPiece = (targetElem, callback) => {
   else if (container.switcher && activeElem) 
   {    
     // check is new tile and empty, if yes, move chess piece there   
-    if (!targetElem.chessPiece &&  
-        activeElem.chessPiece.moveIsPossible(targetElem.id)) 
+    if (!targetElem.chessPiece && activeElem.chessPiece.moveIsPossible(targetElem.id))                  
     {      
       // update board state matrix
 
@@ -148,10 +147,7 @@ const moveChessPiece = (targetElem, callback) => {
       const targetElemId = parseElemId(targetElem);
       // set new position for a chess piece 
       board[activeElemId.x][activeElemId.y].setPositions(targetElemId.x, targetElemId.y);
-      
-      // if it's attack move
-      //   clear targetTile (from boardState and htmlBoard?)
-   
+    
       // fancy js-way to swap elements in array (destructuring)
       [board[activeElemId.x][activeElemId.y], board[targetElemId.x][targetElemId.y]] = 
         [board[targetElemId.x][targetElemId.y], board[activeElemId.x][activeElemId.y]];    
@@ -159,9 +155,20 @@ const moveChessPiece = (targetElem, callback) => {
       callback();
     }
     // if new tile is not empty 
-    else if (targetElem.chessPiece && targetElem.chessPiece.moveIsPossible(targetElem.id)) 
+    else if (targetElem.chessPiece && activeElem.chessPiece.attackIsPossible(targetElem.id)) 
     {
-      console.log(targetElem);
+      // update board state matrix
+
+      const activeElemId = parseElemId(activeElem);
+      const targetElemId = parseElemId(targetElem);
+      // set new position for a chess piece 
+      board[activeElemId.x][activeElemId.y].setPositions(targetElemId.x, targetElemId.y);
+
+      board[targetElemId.x][targetElemId.y] = board[activeElemId.x][activeElemId.y];
+      board[activeElemId.x][activeElemId.y] = false;
+
+      console.log(activeElemId.x + ', ' + activeElemId.y + ' --> ' + targetElemId.x + ', ' + targetElemId.y);
+      callback();
     }
     // set all temp data to original values
     container.switcher = false;
@@ -171,7 +178,7 @@ const moveChessPiece = (targetElem, callback) => {
   {
     alert(`It's not your turn yet!`);
   }
-   
+  
 }
 
 const parseElemId = e => {
