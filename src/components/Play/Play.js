@@ -10,7 +10,7 @@ export default class Play extends React.Component {
   constructor() {
     super();    
     const chessBoard = initBoard(); // put pieces on board
-
+    gameTimer();
     this.state = {
       gameRef: database().ref("games").child(userCachedData.gameId), // reference to game in database
       game: {
@@ -40,6 +40,7 @@ export default class Play extends React.Component {
         <div className="matchinfo" id="matchinfo">
           <p>Your color is {userCachedData.color}</p>
           <p>Now it's {this.state.game.activePlayerColor}'s turn.</p>
+          <p>Pozostały czas: <span id="timer">-:-</span></p>
         </div>
       </div>
     );
@@ -187,3 +188,32 @@ const updateArray = (arrFromDb, arrToUpdate) => {
     this.setState({ game: gameData });
     console.log("caching game data: ", this.state.game);
   } */
+
+//GAME TIMER
+
+function gameTimer() {
+  var t = 15; //timer value in minutes
+
+  var msNow = new Date().getTime();
+  var msCountdownDate = new Date(msNow + t * 60 * 1000).getTime();
+
+  var x = setInterval(function () {
+    var now = new Date().getTime();
+
+    var delta = msCountdownDate - now; //remaining time
+
+    var minutes = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60)); // 1h/1m
+    var seconds = Math.floor((delta % (1000 * 60)) / 1000); // 1m/1s
+
+    if (seconds < 10 && seconds >= 0) { seconds = "0" + seconds };
+
+    document.getElementById("timer").innerHTML = minutes + ":" + seconds;
+
+    if (delta < 0) {
+      clearInterval(x);
+      document.getElementById("timer").innerHTML = "<span style='color:red;'>Koniec czasu!</span>";
+      alert("Koniec czasu!"); //Start new game?
+    }
+
+  }, 1000);
+}
