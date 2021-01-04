@@ -48,7 +48,9 @@ export default class App extends Component {
         });
       // user not logged in
       } else {
-        this.loggedUserRef.update({ isLoggedIn: false });
+        if (this.loggedUserRef) {
+          this.loggedUserRef.update({ isLoggedIn: false });
+        }
         resetUserData(userCachedData);
         // reload render
         this.setState({ onAuthFinished: true, userData: userCachedData }); // taki hack żeby poczekać na skończenie dziłania funkcji auth().onAuthStateChanged
