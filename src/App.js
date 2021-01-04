@@ -25,37 +25,41 @@ import UserRoute from './routes/userRoute';
 
 /* ********************************** */
 export default class App extends Component {
+  loggedUserRef; // database reference to logged user
+
   constructor() {
     super();
+    this.loggedUserRef = null;
     this.state = {
       onAuthFinished: false,
-      userData: userCachedData
+      userData: userCachedData,
     };
   }
 
   componentDidMount() {
-    const callback = (data) => {
-      loadUserDataFromServer(userCachedData, data);
-      console.log("userDataFirst: ", userCachedData);
-      // reload render
-      this.setState({ onAuthFinished: true, userData: userCachedData }); // taki hack żeby poczekać na skończenie dziłania funkcji auth().onAuthStateChanged
-    }
     auth().onAuthStateChanged(user => {
       // user logged in
       if (user) {
-        console.log('user id:  ' + user.uid);
-        const loggedUserRef = database().ref("users").child(user.uid); // get userData from database
-        loggedUserRef.update({ isLoggedIn: true }); // set user as logged in    
-        loggedUserRef.once("value", data => { 
-          callback(data.val()); // wait for data from server and cache it
+        //console.log('user id:  ' + user.uid);
+        this.loggedUserRef = database().ref("users").child(user.uid); // get userData from database
+        this.loggedUserRef.update({ isLoggedIn: true }); // set user as logged in    
+        this.loggedUserRef.once("value", data => { 
+          cacheUserData(data.val()); // wait for data from server and cache it
         });
       // user not logged in
       } else {
+        this.loggedUserRef.update({ isLoggedIn: false });
         resetUserData(userCachedData);
         // reload render
         this.setState({ onAuthFinished: true, userData: userCachedData }); // taki hack żeby poczekać na skończenie dziłania funkcji auth().onAuthStateChanged
       }
     });
+    const cacheUserData = (data) => {
+      loadUserDataFromServer(userCachedData, data);
+      //console.log("userDataFirst: ", userCachedData);
+      // reload render
+      this.setState({ onAuthFinished: true, userData: userCachedData }); // taki hack żeby poczekać na skończenie dziłania funkcji auth().onAuthStateChanged
+    }
   }
 
   render() {
