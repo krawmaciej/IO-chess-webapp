@@ -4,7 +4,7 @@ import { userCachedData } from '../../../user/userData';
 
 // TODO: game starts but you have to wait for other player to join
 // if nobody yet joined the game can be cancelled
-export const WaitForPlayerToJoin = (changeUrlToJoinGame) => {
+export const JoinGame = (changeUrlToJoinGame) => {
     const newGame = { // game state to be pushed into database
         whitePlayerUid: "",
         blackPlayerUid: "",

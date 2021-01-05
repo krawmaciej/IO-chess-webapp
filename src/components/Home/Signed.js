@@ -1,13 +1,21 @@
-import React from "react";
+// REACT and FIREBASE
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import { auth, database } from '../../firebase/firebase';
 
-import { auth } from '../../firebase/firebase';
+// USER INFO
 import { userCachedData, isPlayerInGame } from '../../user/userData';
+
+// GAME TYPES (ranked, wait for someone to join your quick game, invite other user to game)
 import { WaitForPlayerToJoin } from './WaysToStartGame/WaitForPlayerToJoin';
+
+// USERLIST
+import ActiveUsers from "./ActiveUsers/ActiveUsers";
 
 export default function Signed() {
     const history = useHistory();
     
+    // those functions are inside Signed() because they use react hook history
     function renderPlayGamesMenu() {
         if (isPlayerInGame()) {
             return (
@@ -43,13 +51,14 @@ export default function Signed() {
             <p>gid is {userCachedData.gameId}</p> {/* TODO: gid for tests, remove later*/}
             {renderPlayGamesMenu()}
             <button onClick={SignOut}>Logout</button>
+            <ActiveUsers />
         </div>
     );
 }
 
 function SignOut() {
-    auth().signOut().then(() => {
-      console.log('successful signout');
-      // Sign-out successful.
-    }).catch(console.log)
+  auth().signOut().then(() => {
+    console.log('successful signout');
+    // Sign-out successful.
+  }).catch(console.log)
 }
