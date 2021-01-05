@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-// import { useHistory } from "react-router-dom";
 import { CHESS_COLORS } from '../../chess/chess';
 import { auth, database } from '../../firebase/firebase';
 import { userCachedData } from '../../user/userData';
 
 export default class Signed extends Component {
-    //history = useHistory(); // react hooks
-
     render() {
         return (
             <div>
@@ -26,6 +23,9 @@ export default class Signed extends Component {
         }).catch(console.log)
     }
 
+    // TODO: move to /play
+    // if player not in a game create a quick game and wait for other player to join
+    // if in a game then yeah...
     playGame() {
       if (userCachedData.gameId === "") { // create new game
         this.createGame(this.props.history);
