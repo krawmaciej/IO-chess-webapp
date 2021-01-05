@@ -1,39 +1,13 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 
-import { CHESS_COLORS } from '../../chess/chess';
-import { auth, database } from '../../firebase/firebase';
+import { auth } from '../../firebase/firebase';
 import { userCachedData, isPlayerInGame } from '../../user/userData';
 import { WaitForPlayerToJoin } from './WaysToStartGame/WaitForPlayerToJoin';
 
 export default function Signed() {
     const history = useHistory();
-      
-    function createGame(goToGameCallback) {
-        const newGame = { // game state to be pushed into database
-            whitePlayerUid: "",
-            blackPlayerUid: "",
-            activePlayerColor: CHESS_COLORS.WHITE,
-            winner: "",
-            moves: [] // array of moves made by each player, also used to load current state of the board
-        };
-      
-        newGame.whitePlayerUid = userCachedData.uid; // make player a white player
-        userCachedData.color = CHESS_COLORS.WHITE; // set player color to white
-      
-        const gameRef = database().ref("games").push();
-        userCachedData.gameId = gameRef.key; // set user gid
     
-        const loggedUserRef = database().ref("users").child(userCachedData.uid);
-        loggedUserRef.set(userCachedData); // update user data on database
-    
-        gameRef.set(newGame).then(() => {
-            goToGameCallback();
-        }, (err) => {
-            throw err;
-        });
-    }
-
     function renderPlayGamesMenu() {
         if (isPlayerInGame()) {
             return (
@@ -67,8 +41,6 @@ export default function Signed() {
             <p>Logged in as {userCachedData.email}</p>
             <p>uid is {userCachedData.uid}</p> {/* TODO: uid for tests, remove later*/}
             <p>gid is {userCachedData.gameId}</p> {/* TODO: gid for tests, remove later*/}
-            <p>TODO: display possible game modes if player's not in the game
-            OTHERWISE display only the play button to let player join the game that he's in</p>
             {renderPlayGamesMenu()}
             <button onClick={SignOut}>Logout</button>
         </div>
