@@ -51,7 +51,7 @@ export default class Play extends React.Component {
     // at the beginning cache whole game data from server
     this.state.gameRef.once("value", data => {
       this.cacheGameData(data.val()); 
-      drawChessPieces(this.state.board, this.state.props); 
+      // drawChessPieces(this.state.board, this.state.props); 
     });
 
     // 1) init board state and draw a board
