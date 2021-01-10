@@ -38,12 +38,16 @@ export default class App extends Component {
 
   componentDidMount() {
     auth().onAuthStateChanged(user => {
+      
+      
       // user logged in
       if (user) {
         //console.log('user id:  ' + user.uid);
         this.loggedUserRef = database().ref("users").child(user.uid); // get userData from database
-        this.loggedUserRef.update({ isLoggedIn: true }); // set user as logged in    
-        this.loggedUserRef.once("value", data => { 
+        this.loggedUserRef.update({ isLoggedIn: true }); // set user as logged in   
+
+        // TODO: this might be needed to be put in different place, before it was once() now it's on()
+        this.loggedUserRef.on("value", data => { 
           cacheUserData(data.val()); // wait for data from server and cache it
         });
       // user not logged in

@@ -1,7 +1,7 @@
 // REACT and FIREBASE
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { auth } from '../../firebase/firebase';
+import { auth, database } from '../../firebase/firebase';
 
 // USER INFO
 import { userCachedData, isPlayerInGame } from '../../user/userData';
@@ -11,10 +11,38 @@ import { WaitForPlayerToJoin } from './WaysToStartGame/WaitForPlayerToJoin';
 
 // USERLIST
 import ActiveUsers from "./ActiveUsers/ActiveUsers";
+import { invite } from "./InvitePopup";
+
 
 export default function Signed() {
+  const [isInviteSent, setIsInviteSent] = useState(false); // TODO: take this from database instead hint: react setstate once
+  const history = useHistory();
 
-    const history = useHistory();
+  useEffect(() => {
+
+  // TODO: change to non automatic
+  // if invite is sent to this player then show it on screen
+  // automaticly accepts invite for now
+  const invitesRef = database().ref("invites");
+  invitesRef.on('value', data => {
+    data.forEach((entry) => {
+      if (isThisUserInvited(entry.val())) {
+        invitesRef.child(entry.key).child("isAccepted").set(true);
+      }
+    });
+  });
+  
+  function gameCreated() {
+  }
+  
+
+  }, []);
+
+
+  function isThisUserInvited(entry) {
+    console.log(entry);
+    return (entry.joiner === userCachedData.uid) ? true : false;
+  }
     
     // those functions are inside Signed() because they use react hook history
     function renderPlayGamesMenu() {
@@ -45,8 +73,20 @@ export default function Signed() {
         WaitForPlayerToJoin(goToGame); // invokes a game type creation function that the user clicked on
     }
 
+    function acceptInvite() {
+      goToGame();
+    }
+
+
+
+    function showInvite() {
+
+    }
+
     return (
         <div>
+          {invite(isInviteSent, setIsInviteSent)}
+
           <p>Logged in as {userCachedData.email}</p>
           <p>uid is {userCachedData.uid}</p> {/* TODO: uid for tests, remove later*/}
           <p>gid is {userCachedData.gameId}</p> {/* TODO: gid for tests, remove later*/}

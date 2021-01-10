@@ -96,6 +96,7 @@ function sendGameInvite(enemyId, setHasActiveUserSentInvite, goToGame) {
       console.log(data.val());
       if (data.val()) {
         CreateGameForTwoPlayers(enemyId, goToGame);
+        // TODO: remove invite from db
       }
     }); 
   }, (err) => {

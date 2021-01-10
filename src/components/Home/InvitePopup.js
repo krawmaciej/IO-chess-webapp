@@ -1,3 +1,6 @@
+import Popup from 'reactjs-popup';
+import './invite.css';
+
 const invite = (showInvite, setShowInvite) => (
   <Popup
     open={showInvite}
@@ -30,3 +33,5 @@ const invite = (showInvite, setShowInvite) => (
     )}
   </Popup>
 );
+
+export { invite };
