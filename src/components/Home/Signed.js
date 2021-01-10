@@ -1,7 +1,7 @@
 // REACT and FIREBASE
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
-import { auth, database } from '../../firebase/firebase';
+import { auth } from '../../firebase/firebase';
 
 // USER INFO
 import { userCachedData, isPlayerInGame } from '../../user/userData';
@@ -13,6 +13,7 @@ import { WaitForPlayerToJoin } from './WaysToStartGame/WaitForPlayerToJoin';
 import ActiveUsers from "./ActiveUsers/ActiveUsers";
 
 export default function Signed() {
+
     const history = useHistory();
     
     // those functions are inside Signed() because they use react hook history

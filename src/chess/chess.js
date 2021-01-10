@@ -486,20 +486,14 @@ const initChessPieces = () => {
   }
 }
 
-const generateColorsForPlayers = () => {
+const generateChessColor = () => {
   const colorIndex = Math.floor(Math.random() * 2); // randomize player's color
 
   if (colorIndex === 0) {
-    return {
-      first: CHESS_COLORS.WHITE,
-      second: CHESS_COLORS.BLACK
-    }
-  } else {
-    return {
-      first: CHESS_COLORS.BLACK,
-      second: CHESS_COLORS.WHITE
-    }
+    return CHESS_COLORS.WHITE;
   }
+
+  return CHESS_COLORS.BLACK;
 }
 
-export { CHESS_COLORS, initChessPieces, generateColorsForPlayers };
+export { CHESS_COLORS, initChessPieces, generateChessColor };
