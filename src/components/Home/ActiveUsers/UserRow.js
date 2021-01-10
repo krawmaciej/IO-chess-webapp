@@ -10,7 +10,7 @@ export default function UserRow(props) {
   }
 
   return (
-    <tr>
+    <tr id={props.uid}>
       <td>{props.email}</td>
       <td>{isPlayingMessage(props.gameId)}</td>
       <td>{playTogetherButton(props.gameId, goToGame)}</td>
@@ -49,5 +49,5 @@ function playTogetherButton(gameId, goToGameCallback) {
 }
 
 function joinGameButton(gameId, goToGameCallback) {
-
+  console.log("test");
 }

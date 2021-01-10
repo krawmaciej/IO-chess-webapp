@@ -22,9 +22,7 @@ export default function ActiveUsers() {
 
   // map instead of foreach because javascript
   return (
-    <div>
-      {
-        activeUsersList.map((user) => {
+        activeUsersList.map((user, uniqueId) => {
           const isNotThisUser = (userCachedData.uid === user.uid) ? false : true;
           const isLoggedIn = user.isLoggedIn;
           if (isNotThisUser && isLoggedIn) {
@@ -32,8 +30,6 @@ export default function ActiveUsers() {
           }
           return null;
         })
-      }
-    </div>
   );
 }
 

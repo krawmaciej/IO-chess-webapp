@@ -46,12 +46,18 @@ export default function Signed() {
 
     return (
         <div>
-            <p>Logged in as {userCachedData.email}</p>
-            <p>uid is {userCachedData.uid}</p> {/* TODO: uid for tests, remove later*/}
-            <p>gid is {userCachedData.gameId}</p> {/* TODO: gid for tests, remove later*/}
-            {renderPlayGamesMenu()}
-            <button onClick={SignOut}>Logout</button>
-            <ActiveUsers />
+          <p>Logged in as {userCachedData.email}</p>
+          <p>uid is {userCachedData.uid}</p> {/* TODO: uid for tests, remove later*/}
+          <p>gid is {userCachedData.gameId}</p> {/* TODO: gid for tests, remove later*/}
+          {renderPlayGamesMenu()}
+          <button onClick={SignOut}>Logout</button>
+          
+          <table>
+            
+            <tbody>
+              <ActiveUsers />
+            </tbody>
+          </table>
         </div>
     );
 }
