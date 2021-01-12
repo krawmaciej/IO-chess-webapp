@@ -40,6 +40,7 @@ class ChessPiece { // treat it as an abstract class
 
     this.regularMoves = [];    
     this.attackMoves = [];
+
   }
 
   setPositions(x, y) {
@@ -359,6 +360,47 @@ class King extends ChessPiece {
     this.code = this.color === CHESS_COLORS.WHITE ? '&#9812' : '&#9818'; 
     this.id = this.type + STATIC_ID[this.type];
     STATIC_ID[this.type]++;
+
+    this.threatPos = {};
+
+    this.availableChesspiecesWhenChecked = [];
+    this.movesWhenChecked = [];
+  }
+
+  isChecked(board) {
+    const currentPos = XY(this.posX, this.posY);
+    const arr = [this.moveUp, this.moveDown, this.moveLeft, this.moveRight,
+      this.moveUpLeft, this.moveUpRight, this.moveDownLeft, this.moveDownRight];
+
+    for (let i = 0; i < arr.length; i++) {
+      let curPos = arr[i](currentPos);
+      while(isWithinBound(curPos)) {        
+        const cp = board[curPos.x][curPos.y];
+        if(cp && cp.color === this.color)
+            break;
+        else if (cp && cp.color !== this.color) {
+          cp.calculateMoves(board);
+          if (cp.attackMoves && this.isKingInDanger(cp.attackMoves)) {
+            this.threatPos = curPos;         
+            return true;
+          }
+        }          
+        curPos = arr[i](curPos);
+      }    
+    }
+    return false;
+  }
+  // this.availableChesspiecesWhenChecked = [];
+  // this.movesWhenChecked = [];
+  calculateMovesWhenChecked(board) {
+
+  }
+  canMoveWhenChecked(id) {
+    this.movesWhenChecked.forEach(e => {
+      if (id === e)
+        return true;
+    })
+    return false;
   }
 
   calculateMoves(board) {
@@ -374,19 +416,17 @@ class King extends ChessPiece {
     this.checkPathSingle(board, this.moveUpRight);
     this.checkPathSingle(board, this.moveDownLeft);
     this.checkPathSingle(board, this.moveDownRight);
+  }
 
-
-   /*  // actual logic for black & white
-    const moves = [];
-    for (let i = -1; i <= 1; i++) {
-      moves.push( [this.posX + 1, this.posY + i] );
-      moves.push( [this.posX - 1, this.posY + i] );
-      moves.push( [this.posX, this.posY + i] );      
+  isKingInDanger(enemyAttackMoves) {
+    const currentPos = XY(this.posX, this.posY);
+    
+    for (let i = 0; i < enemyAttackMoves.length; i++) {
+      console.log(enemyAttackMoves[0], currentPos.x, enemyAttackMoves[1], currentPos.y)
+      if (enemyAttackMoves[i][0] === currentPos.x && enemyAttackMoves[i][1] === currentPos.y)
+        return true;
     }
-    moves.forEach(m => {
-      if (m[0] >= 0 && m[0] <= 7 && m[1] >= 0 && m[1] <= 7 && !(m[0] === this.posX && m[1] === this.posY))        
-        this.regularMoves.push([m[0], m[1]]);
-    }); */
+    return false;
   }
 }
 
@@ -441,6 +481,7 @@ class Queen extends ChessPiece {
     } */
   }
 }
+
 
 
 

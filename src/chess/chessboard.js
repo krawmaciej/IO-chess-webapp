@@ -1,4 +1,4 @@
-import { initChessPieces } from './chess';
+import { initChessPieces, CHESS_COLORS } from './chess';
 // import { CHESS_COLORS } from '../../chess/chess.js';
 const initBoard = () => {
   const cp = initChessPieces();
@@ -54,6 +54,8 @@ const drawBoard = (board, callback) => {
   const container = document.getElementById('chessBoard');
   container.board = board;
   container.switcher = false;
+  container.kingIsChecked = false;
+  container.kings = { wKing: board[7][4], bKing: board[0][4] };
   let toggle = true;
 
   // draw tiles
@@ -114,71 +116,93 @@ const insertChessPiece = (e, posX, posY) => {
 }
 
 // moving chess pieces
-const moveChessPiece = (targetElem, callback) => {
+const moveChessPiece = (targetElem, callback) => { 
   const container = targetElem.parentElement;
-  const activeElem = container.activeElement;
+  const activeElem = container.activeElement; 
   const board = container.board;
   const props = container.props;
+  const king = getActiveKing(container.kings, props.thisPlayerColor);
 
-  // if chess piece is not chosen, choose it and save relevant data
-  if (targetElem.chessPiece && 
-      !targetElem.parentElement.switcher && 
-      props.activePlayerColor === props.thisPlayerColor &&
-      targetElem.chessPiece.color === props.thisPlayerColor)     
-  { 
-    container.switcher = true;
-    container.activeElement = targetElem;
-    targetElem.classList.toggle('active');
-
-    // calculate possible moves for chess piece
-    targetElem.chessPiece.calculateMoves(container.board);
-    console.log('possible moves --> ', targetElem.chessPiece.regularMoves); // TEMP
-    console.log('possible attacks --> ', targetElem.chessPiece.attackMoves);
+  if (props.thisPlayerColor !== props.activePlayerColor) {
+    alert(`It's not your turn yet!`);
+    return;
   } 
-  // check if chess piece is chosen, if yes, try to move it
+
+  // IF CHESSPIECE IS NOT CHOSEN YET
+  if (!targetElem.parentElement.switcher && 
+      targetElem.chessPiece && targetElem.chessPiece.color === props.thisPlayerColor) 
+  {
+    if (king.isChecked(board)) {
+          // is king checked?
+    //   if yes, calculate available moves to escape 
+    //     if this move is one of available moves, do it
+    //     else console.log(save king);
+      //king.calculateMovesWhenChecked(board); // calculate possible moves for chess pieces when king is checked
+      // 1) figures which can move when king is checked
+      // 2) moves which can be made by thouse figures
+      if (king.canMoveWhenChecked(targetElem.chessPiece.id)) {
+        saveMoveData(container, targetElem); // save relevant data for future        
+        container.kingIsChecked = true;      
+      }
+      else 
+        alert('Your King is under attack! Defend the King!');  
+    }
+    // king is NOT checked
+    else {
+      saveMoveData(container, targetElem); // save relevant data for future
+      targetElem.chessPiece.calculateMoves(board); // calculate possible moves for active chess piece
+      console.log('possible moves --> ', targetElem.chessPiece.regularMoves); // TEMP
+      console.log('possible attacks --> ', targetElem.chessPiece.attackMoves);
+    }     
+  }
+  // IF CHESSPIECE IS ALREADY CHOSEN
   else if (container.switcher && activeElem) 
   {    
-    // check is new tile and empty, if yes, move chess piece there   
-    if (!targetElem.chessPiece && activeElem.chessPiece.moveIsPossible(targetElem.id))                  
-    {      
-      // update board state matrix
-
-      const activeElemId = parseElemId(activeElem);
-      const targetElemId = parseElemId(targetElem);
-      // set new position for a chess piece 
-      board[activeElemId.x][activeElemId.y].setPositions(targetElemId.x, targetElemId.y);
-    
-      // fancy js-way to swap elements in array (destructuring)
-      [board[activeElemId.x][activeElemId.y], board[targetElemId.x][targetElemId.y]] = 
-        [board[targetElemId.x][targetElemId.y], board[activeElemId.x][activeElemId.y]];    
-
-      callback();
-    }
-    // if new tile is not empty 
-    else if (targetElem.chessPiece && activeElem.chessPiece.attackIsPossible(targetElem.id)) 
-    {
-      // update board state matrix
-
-      const activeElemId = parseElemId(activeElem);
-      const targetElemId = parseElemId(targetElem);
-      // set new position for a chess piece 
-      board[activeElemId.x][activeElemId.y].setPositions(targetElemId.x, targetElemId.y);
-
-      board[targetElemId.x][targetElemId.y] = board[activeElemId.x][activeElemId.y];
-      board[activeElemId.x][activeElemId.y] = false;
-
-      console.log(activeElemId.x + ', ' + activeElemId.y + ' --> ' + targetElemId.x + ', ' + targetElemId.y);
-      callback();
-    }
-    // set all temp data to original values
+    if (container.kingIsChecked) {
+      // if (!targetElem.chessPiece)
+      //   move to empty tile 
+      // else if (targetElem.chessPiece)
+      //   attack enemy piece
+      // container.kingIsChecked = false;
+    }  
+    else 
+      sendMoveToDb(activeElem, targetElem, callback/*, tempmakeMove*/);
+    // set all temp data to original values (regardless if move is succesful or not)
     container.switcher = false;
     activeElem.classList.toggle('active');
   }
-  else if (props.thisPlayerColor !== props.activePlayerColor)
-  {
-    alert(`It's not your turn yet!`);
+}
+
+const makeMove = (board, move) => {
+  board[move.From.x][move.From.y].setPositions(move.To.x, move.To.y); //positions
+  board[move.To.x][move.To.y] = board[move.From.x][move.From.y];
+  board[move.From.x][move.From.y] = false;
+}
+
+const sendMoveToDb = (activeElem, targetElem, cb/*, tempcb2*/) => {
+  const activeElemCoords = parseElemId(activeElem);
+  const targetElemCoords = parseElemId(targetElem);
+   // if tile is NOT empty
+  if (targetElem.chessPiece && activeElem.chessPiece.attackIsPossible(targetElem.id)) {   
+    console.log(activeElemCoords.x + ', ' + activeElemCoords.y + ' --> ' + targetElemCoords.x + ', ' + targetElemCoords.y);
+    cb({ 
+      From: { x: activeElemCoords.x, y: activeElemCoords.y }, 
+      To: { x: targetElemCoords.x, y: targetElemCoords.y}
+    });
   }
-  
+  // if tile empty
+  else if (!targetElem.chessPiece && activeElem.chessPiece.moveIsPossible(targetElem.id)) { 
+    cb({ 
+      From: { x: activeElemCoords.x, y: activeElemCoords.y }, 
+      To: { x: targetElemCoords.x, y: targetElemCoords.y}
+    });
+  }
+}
+
+const saveMoveData = (container, targetElem) => {
+  container.switcher = true;
+  container.activeElement = targetElem;
+  targetElem.classList.toggle('active');
 }
 
 const parseElemId = e => {
@@ -188,5 +212,13 @@ const parseElemId = e => {
   }
 }
 
+const getActiveKing = (kings, color) => {
+  // find out which players turn is it
+  if (color === CHESS_COLORS.WHITE)
+    return kings.wKing;
+  else if (color === CHESS_COLORS.BLACK)
+    return kings.bKing;
+}
 
-export { initBoard, drawBoard, drawChessPieces };
+
+export { initBoard, drawBoard, drawChessPieces, makeMove };

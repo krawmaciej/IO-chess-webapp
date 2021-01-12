@@ -1,6 +1,6 @@
 import React from 'react';
 import { CHESS_COLORS } from '../../chess/chess.js';
-import { initBoard, drawBoard, drawChessPieces} from '../../chess/chessboard.js';
+import { initBoard, drawBoard, drawChessPieces, makeMove} from '../../chess/chessboard.js';
 import { database } from '../../firebase/firebase';
 import { userCachedData } from '../../user/userData';
 import '../../chess/chessboard.css';
@@ -17,7 +17,8 @@ export default class Play extends React.Component {
         whitePlayerUid: "",
         blackPlayerUid: "",
         activePlayerColor: "",
-        winner: "",
+        winner: "",   
+        moves: []    
       },
       board: chessBoard,
       props: {
@@ -42,8 +43,15 @@ export default class Play extends React.Component {
           <p>Now it's {this.state.game.activePlayerColor}'s turn.</p>
           <p>Pozostały czas: <span id="timer">-:-</span></p>
         </div>
+        <button onClick={() => { this.RESET() }}>CLEAR MOVES</button>
       </div>
     );
+  }
+
+  RESET() {
+    const movesRef = database().ref("games").child(userCachedData.gameId).child("moves");
+    movesRef.set([]);
+    this.state.gameRef.child('activePlayerColor').set(CHESS_COLORS.WHITE);
   }
 
   componentDidMount() {
@@ -51,23 +59,25 @@ export default class Play extends React.Component {
     // at the beginning cache whole game data from server
     this.state.gameRef.once("value", data => {
       this.cacheGameData(data.val()); 
-      // drawChessPieces(this.state.board, this.state.props); 
     });
 
     // 1) init board state and draw a board
-    // 2) create boardToSend and send it to db
-    // 3) listen to changes on board state
-    // 4) when changed, receive data from db and update local board state and  run drawChessPieces
+    // 2) send [move] to db (CREATE MOVES FIRST)
+    // 3) listen to changes on [moves]
+    // 4) when changed, get new moves from db and update local board
 
-    // draw a board send board state to db  
+    // 1) init board state and draw a board
     drawBoard(this.state.board, this.sendData);  
-    this.sendData();
+    drawChessPieces(this.state.board, this.state.props);
 
-    // listen to changes on boardState
-    this.state.gameRef.child('boardState').on('value', data => {
-      this.updateBoardState(data.val());
-      drawChessPieces(this.state.board, this.state.props); 
-    }); 
+
+    // 3) listen to changes on Moves
+    // listen to added moves, on start load each added move seperately (in order)
+    this.state.gameRef.child("moves").on("child_added", data => {
+      // 4) when changed, get new moves from db and update local board
+      console.log(data.val());
+      this.loadMoves(data.val());
+    });
 
     // listen to changes on activePlayerColor
     this.state.gameRef.child("activePlayerColor").on("value", data => {
@@ -81,7 +91,8 @@ export default class Play extends React.Component {
       whitePlayerUid: data.whitePlayerUid,
       blackPlayerUid: data.blackPlayerUid,
       activePlayerColor: data.activePlayerColor,
-      winner: data.winner
+      winner: data.winner,
+      moves: data.moves
     }
     this.setState({ game: gameData });
 
@@ -90,26 +101,25 @@ export default class Play extends React.Component {
     this.setState({ props: propsData });
     // console.log("current state: ", this.state.game);
   }
-  /* const gameData = this.state.game;
-  gameData.activePlayerColor = CHESS_COLORS.WHITE === this.state.game.activePlayerColor ? CHESS_COLORS.BLACK : CHESS_COLORS.WHITE;
-  this.setState({ game: gameData }); */
-  sendData = () => {
-    // send updated data to db
-    const newColor = CHESS_COLORS.WHITE === this.state.game.activePlayerColor ? CHESS_COLORS.BLACK : CHESS_COLORS.WHITE;
-    this.state.gameRef.child('activePlayerColor').set(newColor);
 
-    //  send chess board state to a DB
-    const arrToSend = stringifyChessBoard(this.state.board);
-    //console.log('board to send: ', arrToSend)
-    this.state.gameRef.child('boardState').set(arrToSend);
+  sendData = (move) => {
+    // 2) send [move] to db
+    const movesRef = database().ref("games").child(userCachedData.gameId).child("moves");
+    movesRef.once("value", data => {
+      let moves = data.val();
+      if (!moves)
+        moves = [];
+      moves.push(move);
+      movesRef.set(moves);
+    }).then(() => {
+      const newColor = CHESS_COLORS.WHITE === this.state.game.activePlayerColor ? CHESS_COLORS.BLACK : CHESS_COLORS.WHITE;
+      this.state.gameRef.child('activePlayerColor').set(newColor);
+    });
   }
 
-  updateBoardState(data) {
-    const board = this.state.board;
-    //console.log('data from db: ', data);
-    //console.log('board to update: ', board); /**/
-    updateArray(data, board);
-    this.setState({ board: board });      
+  loadMoves = (move) => {
+    makeMove(this.state.board, move);
+    drawChessPieces(this.state.board, this.state.props);
   }
 
   updatePageActivePlayerColor(data) {
@@ -123,71 +133,7 @@ export default class Play extends React.Component {
   }    
 }
 
-const stringifyChessBoard = (board) => {
-  let arrToSend = [];
-  for (let i = 0; i < 8; i++)
-    arrToSend[i] = [];
 
-  for (let i = 0; i < board.length; i++) {
-    for (let j = 0; j < board[i].length; j++) {
-      const id = board[i][j].id;
-      arrToSend[i][j] = id ? id : false;
-    }
-  }
-  return arrToSend;
-} 
-
-const updateArray = (arrFromDb, arrToUpdate) => {
-  const changedPositions = [];
-
-  for (let i = 0; i < arrToUpdate.length; i++) {
-    for (let j = 0; j < arrToUpdate[i].length; j++) {
-      if (arrToUpdate[i][j] && arrToUpdate[i][j].id !== arrFromDb[i][j])
-        changedPositions.push(arrToUpdate[i][j]);
-    }    
-  }
-
-  changedPositions.forEach(obj => {
-    let destinationIndexX, destinationIndexY;
-    let currentIndexX = obj.posX, 
-        currentIndexY = obj.posY;
-
-    for (let i = 0; i < arrFromDb.length; i++) {
-      for (let j = 0; j < arrFromDb[i].length; j++) {
-        if (arrFromDb[i][j] === obj.id) {
-          destinationIndexX = i;
-          destinationIndexY = j;
-        }
-      }
-    }
-
-    arrToUpdate[currentIndexX][currentIndexY] = false;
-    if (typeof(destinationIndexX) === 'number' && typeof(destinationIndexY) === 'number') {   
-      obj.setPositions(destinationIndexX, destinationIndexY);
-      arrToUpdate[destinationIndexX][destinationIndexY] = obj;
-    }
-
-  });
-};
-
-/*
-  updatePageActivePlayerColor(data) {
-    const gameData = this.state.game;
-    gameData.activePlayerColor = data;
-    this.setState({ game: gameData });
-  }     */
-
-/*   cacheGameData(data) {
-    const gameData = {
-      whitePlayerUid: data.whitePlayerUid,
-      blackPlayerUid: data.blackPlayerUid,
-      activePlayerColor: data.activePlayerColor,
-      winner: data.winner,
-      boardState: []
-    }
-    this.setState({ game: gameData });
-    console.log("caching game data: ", this.state.game);
-  } */
 
 //GAME TIMER
 
