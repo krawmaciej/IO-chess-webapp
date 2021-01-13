@@ -67,7 +67,7 @@ export default class Play extends React.Component {
     // 4) when changed, get new moves from db and update local board
 
     // 1) init board state and draw a board
-    drawBoard(this.state.board, this.sendData);  
+    drawBoard(this.state.board, this.sendData, userCachedData.color);  
     drawChessPieces(this.state.board, this.state.props);
 
 

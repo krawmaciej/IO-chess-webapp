@@ -50,7 +50,7 @@ const initBoard = () => {
 }
 
 // drawing board
-const drawBoard = (board, callback) => {
+const drawBoard = (board, callback, color) => {
   const container = document.getElementById('chessBoard');
   container.board = board;
   container.switcher = false;
@@ -59,13 +59,24 @@ const drawBoard = (board, callback) => {
   let toggle = true;
 
   // draw tiles
-  for (let i = 0; i < 8; i++) {
-    for (let j = 0; j < 8; j++) {
-      container.appendChild(makeTile(toggle, i, j));      
+  if (color === CHESS_COLORS.WHITE) {    
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        container.appendChild(makeTile(toggle, i, j));      
+        toggle = !toggle;
+      }
       toggle = !toggle;
     }
-    toggle = !toggle;
   }
+  else if (color === CHESS_COLORS.BLACK) {
+    for (let i = 7; i >= 0; i--) {
+      for (let j = 0; j < 8; j++) {
+        container.appendChild(makeTile(toggle, i, j));      
+        toggle = !toggle;
+      }
+      toggle = !toggle;
+    }
+  }  
 
   // add onclick event listeners
   const tiles = document.getElementById('chessBoard').children;
