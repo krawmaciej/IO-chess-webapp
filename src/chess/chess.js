@@ -15,10 +15,26 @@ const CHESS_COLORS = { // chess color enum
   BLACK: 'black'
 };
 
+const CHESS_TYPES = {
+  PAWN: 'Pawn',
+  ROOK: 'Rook',
+  KNIGHT: 'Knight',
+  BISHOP: 'Bishop',
+  KING: 'King',
+  QUEEN: "Queen",
+}
+
 const XY = (x, y) => {
   return {
     x: x,
     y: y
+  }
+}
+
+const FromTo = (o1, o2) => {
+  return {
+    From: o1,
+    To: o2
   }
 }
 
@@ -27,7 +43,6 @@ const isWithinBound = (obj) => {
     return false;
   return true;
 }
-
 class ChessPiece { // treat it as an abstract class
   constructor(color, posX, posY) {
     this.id;
@@ -48,41 +63,29 @@ class ChessPiece { // treat it as an abstract class
     this.posY = y;
   }
 
-  checkPath(board, cb) {
-    /* 
-    loop as long as coords are within threshold {
-      move up      
-      if nextTile is empty
-        add coords to regularMoves
-      else if nextTile is not empty AND nextTile.piece.color !== thisTile.piece.color
-        add coords to attackMoves
-        break;
-      else
-        break;     
-    }
-    */
+  checkPath(board, cb, kingIsSafe) {
     const thisCoords = XY(this.posX, this.posY);    
     const thisTile = board[thisCoords.x][thisCoords.y];
     let nextCoords = cb(thisCoords);
     while(isWithinBound(nextCoords)) {
       const nextTile = board[nextCoords.x][nextCoords.y];
 
-      if (!nextTile)
+      if (!nextTile && this.isKingSafe(kingIsSafe, thisCoords, nextCoords))
       {
         this.regularMoves.push([ nextCoords.x, nextCoords.y ]);
       }
-      else if (nextTile && nextTile.color !== thisTile.color)
+      else if (nextTile && nextTile.color !== thisTile.color && this.isKingSafe(kingIsSafe, thisCoords, nextCoords))
       {
         this.attackMoves.push([ nextCoords.x, nextCoords.y ]);
         break;
       }
-      else
+      else if (nextTile && nextTile.color === thisTile.color)
         break;
       nextCoords = cb(nextCoords);
     }
   }
   
-  checkPathSingle(board, cb) {
+  checkPathSingle(board, cb, kingIsSafe) {
     const thisCoords = XY(this.posX, this.posY);    
     const thisTile = board[thisCoords.x][thisCoords.y];
     const nextCoords = cb(thisCoords);
@@ -90,11 +93,11 @@ class ChessPiece { // treat it as an abstract class
     if (isWithinBound(nextCoords)) 
     {
       const nextTile = board[nextCoords.x][nextCoords.y];
-      if (!nextTile)
+      if (!nextTile && this.isKingSafe(kingIsSafe, thisCoords, nextCoords))
       {
         this.regularMoves.push([ nextCoords.x, nextCoords.y ]);
       }
-      else if (nextTile && nextTile.color !== thisTile.color)
+      else if (nextTile && nextTile.color !== thisTile.color && this.isKingSafe(kingIsSafe, thisCoords, nextCoords))
       {
         this.attackMoves.push([ nextCoords.x, nextCoords.y ]);
       }
@@ -131,6 +134,60 @@ class ChessPiece { // treat it as an abstract class
   }
 
 
+  // for checkmate
+  copyBoard(board) {
+    const res = [];
+
+    for (let i = 0; i < board.length; i++) {
+      const tmp = [];
+      for(let j = 0; j < board[i].length; j++) {
+        tmp.push(board[i][j]);
+      }
+      res.push(tmp);
+    }
+    res.kings = board.kings;  
+
+    return res;
+  }
+
+  simulateMove(board, move) {
+    board[move.From.x][move.From.y].setPositions(move.To.x, move.To.y); //positions
+    board[move.To.x][move.To.y] = board[move.From.x][move.From.y];
+    board[move.From.x][move.From.y] = false;
+  }
+
+  revertSimulation(board, move) {
+    board[move.To.x][move.To.y].setPositions(move.From.x, move.From.y);
+  }
+
+  isKingSafeAfterMove(board, move) {
+    const thisKing = this.color === CHESS_COLORS.WHITE ? board.kings.wKing : board.kings.bKing;
+    const isKingChecked = thisKing.isChecked(board); // <-
+    const newBoard = this.copyBoard(board); // <- 64
+    this.simulateMove(newBoard, move);
+    const newKing = this.color === CHESS_COLORS.WHITE ? newBoard.kings.wKing : newBoard.kings.bKing;
+    const isNewKingChecked = newKing.isChecked(newBoard); // <-
+    this.revertSimulation(newBoard, move);
+
+    console.log('simulated move: ', move.From, '->', move.To);
+
+    if(!isKingChecked) {        
+      if (!isNewKingChecked)
+        return true;
+      else
+        return false;
+    }
+    else {
+      if (isNewKingChecked)
+        return false;
+      else
+        return true;
+    }
+  }
+
+  isKingSafe(kingIsSafe, current, next) {
+    return kingIsSafe ? true : this.isKingSafeAfterMove(this.board, FromTo(current, next));
+  }
 
   // basic moves
   moveUp(o) {
@@ -157,82 +214,74 @@ class ChessPiece { // treat it as an abstract class
   moveDownRight(o) {
     return XY(o.x + 1, o.y + 1);
   }
+  movesKnight(o) {
+    return [
+      XY(o.x + 2, o.y - 1),
+      XY(o.x + 2, o.y + 1),
+      XY(o.x - 2, o.y - 1),
+      XY(o.x - 2, o.y + 1),
+      XY(o.x + 1, o.y - 2),
+      XY(o.x + 1, o.y + 2),
+      XY(o.x - 1, o.y - 2),
+      XY(o.x - 1, o.y + 2)    
+    ]
+  }
 }
 
 class Pawn extends ChessPiece {
   constructor(color, posX, posY) {
     super(color, posX, posY);
     
-    this.type = 'Pawn';
+    this.type = CHESS_TYPES.PAWN;
     this.code = this.color === CHESS_COLORS.WHITE ? "&#9817;" : "&#9823;";
     this.id = this.type + STATIC_ID[this.type];
     STATIC_ID[this.type]++;
   }
 
-  pawn_checkMoveRegular(board, cb) {
+  pawn_checkMoveRegular(board, cb, kingIsSafe) {
     const thisCoords = XY(this.posX, this.posY);   
     const nextCoords = cb(thisCoords);
     const nextTile = board[nextCoords.x][nextCoords.y];
-    if (!nextTile) {
-      this.regularMoves.push([ nextCoords.x, nextCoords.y ]);
-      if (this.posX === this.startPosX && this.posY === this.startPosY) {
-        const secondNextCoords = cb(nextCoords);
-        const secondNextTile = board[secondNextCoords.x][secondNextCoords.y];
-        if (!secondNextTile)
-          this.regularMoves.push([ secondNextCoords.x, secondNextCoords.y ])
-      }
+
+    if (this.posX === this.startPosX && this.posY === this.startPosY) {
+      const secondNextCoords = cb(nextCoords);
+      const secondNextTile = board[secondNextCoords.x][secondNextCoords.y];
+      if (!secondNextTile && this.isKingSafe(kingIsSafe, thisCoords, secondNextCoords)) {
+        this.regularMoves.push([ secondNextCoords.x, secondNextCoords.y ]);
+      } 
+    }      
+    if (!nextTile && this.isKingSafe(kingIsSafe, thisCoords, nextCoords)) {      
+      this.regularMoves.push([ nextCoords.x, nextCoords.y ]);        
     }
+
   }
 
-  pawn_checkMoveAttack(board, cb) {
+  pawn_checkMoveAttack(board, cb, kingIsSafe) {
     const thisCoords = XY(this.posX, this.posY);   
     const thisTile = board[thisCoords.x][thisCoords.y];
     const nextCoords = cb(thisCoords);
     const nextTile = board[nextCoords.x][nextCoords.y];
-    if (nextTile && nextTile.color !== thisTile.color) {
+    if (nextTile && nextTile.color !== thisTile.color && this.isKingSafe(kingIsSafe, thisCoords, nextCoords))
+    {
       this.attackMoves.push([ nextCoords.x, nextCoords.y ]);
     }
   }
 
-  calculateMoves(board) {
+  calculateMoves(board, kingIsSafe) {
     // clear old data (bad place to do it, I know)
     this.regularMoves.splice(0);
     this.attackMoves.splice(0);
 
     if (this.color === CHESS_COLORS.WHITE) {
-      this.pawn_checkMoveRegular(board, this.moveUp);
-      this.pawn_checkMoveAttack(board, this.moveUpLeft);
-      this.pawn_checkMoveAttack(board, this.moveUpRight);
+      this.pawn_checkMoveRegular(board, this.moveUp, kingIsSafe);
+      this.pawn_checkMoveAttack(board, this.moveUpLeft, kingIsSafe);
+      this.pawn_checkMoveAttack(board, this.moveUpRight, kingIsSafe);
     }
     else if (this.color === CHESS_COLORS.BLACK) {
-      this.pawn_checkMoveRegular(board, this.moveDown);
-      this.pawn_checkMoveAttack(board, this.moveDownLeft);
-      this.pawn_checkMoveAttack(board, this.moveDownRight);
+      this.pawn_checkMoveRegular(board, this.moveDown, kingIsSafe);
+      this.pawn_checkMoveAttack(board, this.moveDownLeft, kingIsSafe);
+      this.pawn_checkMoveAttack(board, this.moveDownRight, kingIsSafe);
     }
-
-    
-
-    /* 
-    else if (nextTile && nextTile.color !== thisTile.color)
-    {
-      this.attackMoves.push([ nextCoords.x, nextCoords.y ]);
-    } */
-
-    /* if (this.color === CHESS_COLORS.WHITE) {
-      // logic for white pawns
-      this.regularMoves.push([ this.posX - 1, this.posY ]);
-      if (this.posX === this.startPosX && this.posY === this.startPosY)
-        this.regularMoves.push([ this.posX - 2, this.posY ]);      
-    }
-    else if (this.color === CHESS_COLORS.BLACK) {
-      // logic for black pawns
-      this.regularMoves.push([ this.posX + 1, this.posY ]);
-      if (this.posX === this.startPosX && this.posY === this.startPosY)
-        this.regularMoves.push([ this.posX + 2, this.posY ]);  
-    } 
-    else {
-      console.log('Error: wrong color!');
-    }    */
   }  
 }
 
@@ -240,30 +289,22 @@ class Rook extends ChessPiece {
   constructor(color, posX, posY) {
     super(color, posX, posY);
 
-    this.type = 'Rook';
+    this.type = CHESS_TYPES.ROOK;
     this.code = this.color === CHESS_COLORS.WHITE ? '&#9814' : '&#9820';
     this.id = this.type + STATIC_ID[this.type];
     STATIC_ID[this.type]++;
   }
 
 
-  calculateMoves(board) {
+  calculateMoves(board, kingIsSafe) {
     // clear old data (bad place to do it, I know)
     this.regularMoves.splice(0);
     this.attackMoves.splice(0);
 
-    this.checkPath(board, this.moveUp);
-    this.checkPath(board, this.moveDown);
-    this.checkPath(board, this.moveLeft);
-    this.checkPath(board, this.moveRight);
-
-    /* // logic for white & black
-    for (let i = 0; i < 8; i++) {
-      if (i !== this.posX)
-        this.regularMoves.push([ i, this.posY ]);
-      if (i !== this.posY)
-        this.regularMoves.push([ this.posX, i]);
-    } */
+    this.checkPath(board, this.moveUp, kingIsSafe);
+    this.checkPath(board, this.moveDown, kingIsSafe);
+    this.checkPath(board, this.moveLeft, kingIsSafe);
+    this.checkPath(board, this.moveRight, kingIsSafe);
   }
 }
 
@@ -271,37 +312,26 @@ class Knight extends ChessPiece {
   constructor(color, posX, posY) {
     super(color, posX, posY);
 
-    this.type = 'Knight';
+    this.type = CHESS_TYPES.KNIGHT;
     this.code = this.color === CHESS_COLORS.WHITE ? '&#9816' : '&#9822';
     this.id = this.type + STATIC_ID[this.type];
     STATIC_ID[this.type]++;
   }
 
-  calculateMoves(board) {
+  calculateMoves(board, kingIsSafe) {
     // clear old data (bad place to do it, I know)
     this.regularMoves.splice(0);
     this.attackMoves.splice(0);
-
     // actual logic
-    const knightMoves = [];
-    knightMoves.push(
-      [this.posX + 2, this.posY - 1],
-      [this.posX + 2, this.posY + 1],
-      [this.posX - 2, this.posY - 1],
-      [this.posX - 2, this.posY + 1],
-      [this.posX + 1, this.posY - 2],
-      [this.posX + 1, this.posY + 2],
-      [this.posX - 1, this.posY - 2],
-      [this.posX - 1, this.posY + 2]
-    );
+    const knightMoves = this.movesKnight(XY(this.posX, this.posY));
     knightMoves.forEach(m => {
-      const coords = XY(m[0], m[1]);
-      if (isWithinBound(coords)) {
-        const targetTile = board[coords.x][coords.y];
-        if (!targetTile) // target tile is empty)
-          this.regularMoves.push([coords.x, coords.y]);
-        else if (targetTile && targetTile.color !== this.color) // target tile has chess piece of oposite color
-          this.attackMoves.push([coords.x, coords.y]);
+      if (isWithinBound(m)) {
+        const targetTile = board[m.x][m.y];
+        if (!targetTile && this.isKingSafe(kingIsSafe, XY(this.posX, this.posY), XY(m.x, m.y))) // target tile is empty)
+          this.regularMoves.push([m.x, m.y]);
+        else if (targetTile && targetTile.color !== this.color
+          && this.isKingSafe(kingIsSafe, XY(this.posX, this.posY), XY(m.x, m.y))) // target tile has chess piece of oposite color
+          this.attackMoves.push([m.x, m.y]);
       }
     });
   }
@@ -311,21 +341,21 @@ class Bishop extends ChessPiece {
   constructor(color, posX, posY) {
     super(color, posX, posY);
 
-    this.type = 'Bishop';
+    this.type = CHESS_TYPES.BISHOP;
     this.code = this.color === CHESS_COLORS.WHITE ? '&#9815' : '&#9821';
     this.id = this.type + STATIC_ID[this.type];
     STATIC_ID[this.type]++;
   }
 
-  calculateMoves(board) {    
+  calculateMoves(board, kingIsSafe) {    
     // clear old data (bad place to do it, I know)
     this.regularMoves.splice(0);
     this.attackMoves.splice(0);
 
-    this.checkPath(board, this.moveUpLeft);
-    this.checkPath(board, this.moveUpRight);
-    this.checkPath(board, this.moveDownLeft);
-    this.checkPath(board, this.moveDownRight);
+    this.checkPath(board, this.moveUpLeft, kingIsSafe);
+    this.checkPath(board, this.moveUpRight, kingIsSafe);
+    this.checkPath(board, this.moveDownLeft, kingIsSafe);
+    this.checkPath(board, this.moveDownRight, kingIsSafe);
 
 
     /* 
@@ -356,7 +386,7 @@ class King extends ChessPiece {
   constructor(color, posX, posY) {
     super(color, posX, posY);
 
-    this.type = 'King';
+    this.type = CHESS_TYPES.KING;
     this.code = this.color === CHESS_COLORS.WHITE ? '&#9812' : '&#9818'; 
     this.id = this.type + STATIC_ID[this.type];
     STATIC_ID[this.type]++;
@@ -379,7 +409,7 @@ class King extends ChessPiece {
         if(cp && cp.color === this.color)
             break;
         else if (cp && cp.color !== this.color) {
-          cp.calculateMoves(board);
+          cp.calculateMoves(board, true);
           if (cp.attackMoves && this.isKingInDanger(cp.attackMoves)) {
             this.threatPos = curPos;         
             return true;
@@ -388,22 +418,35 @@ class King extends ChessPiece {
         curPos = arr[i](curPos);
       }    
     }
+
+    const knightMoves = this.movesKnight(XY(this.posX, this.posY));
+    for (let i = 0; i < knightMoves.length; i++) {
+      const m = knightMoves[i];
+      if (isWithinBound(m)) {
+        //console.log('moves: ', m);
+        const cp = board[m.x][m.y];
+        if (cp && cp.color !== this.color && cp.type === CHESS_TYPES.KNIGHT) {
+          //console.log('threat');
+          this.threatPos = m;
+          return true;
+        }
+      }
+    }
     return false;
   }
-  // this.availableChesspiecesWhenChecked = [];
-  // this.movesWhenChecked = [];
-  calculateMovesWhenChecked(board) {
 
-  }
-  canMoveWhenChecked(id) {
-    this.movesWhenChecked.forEach(e => {
-      if (id === e)
+  isKingInDanger(enemyAttackMoves) {
+    const currentPos = XY(this.posX, this.posY);
+    
+    for (let i = 0; i < enemyAttackMoves.length; i++) {
+      // console.log(enemyAttackMoves[0], currentPos.x, enemyAttackMoves[1], currentPos.y)
+      if (enemyAttackMoves[i][0] === currentPos.x && enemyAttackMoves[i][1] === currentPos.y)
         return true;
-    })
+    }
     return false;
   }
 
-  calculateMoves(board) {
+  calculateMoves(board, kingIsSafe) {
     // clear old data (bad place to do it, I know)
     this.regularMoves.splice(0);
     this.attackMoves.splice(0);
@@ -417,42 +460,31 @@ class King extends ChessPiece {
     this.checkPathSingle(board, this.moveDownLeft);
     this.checkPathSingle(board, this.moveDownRight);
   }
-
-  isKingInDanger(enemyAttackMoves) {
-    const currentPos = XY(this.posX, this.posY);
-    
-    for (let i = 0; i < enemyAttackMoves.length; i++) {
-      console.log(enemyAttackMoves[0], currentPos.x, enemyAttackMoves[1], currentPos.y)
-      if (enemyAttackMoves[i][0] === currentPos.x && enemyAttackMoves[i][1] === currentPos.y)
-        return true;
-    }
-    return false;
-  }
 }
 
 class Queen extends ChessPiece {
   constructor(color, posX, posY) {
     super(color, posX, posY);
 
-    this.type = 'Queen';
+    this.type = CHESS_TYPES.QUEEN;
     this.code = this.color === CHESS_COLORS.WHITE ? '&#9813' : '&#9819';
     this.id = this.type + STATIC_ID[this.type];
     STATIC_ID[this.type]++;
   }
 
-  calculateMoves(board) {
+  calculateMoves(board, kingIsSafe) {
     // clear old data (bad place to do it, I know)
     this.regularMoves.splice(0);
     this.attackMoves.splice(0);
 
-    this.checkPath(board, this.moveUp);
-    this.checkPath(board, this.moveDown);
-    this.checkPath(board, this.moveLeft);
-    this.checkPath(board, this.moveRight);
-    this.checkPath(board, this.moveUpLeft);
-    this.checkPath(board, this.moveUpRight);
-    this.checkPath(board, this.moveDownLeft);
-    this.checkPath(board, this.moveDownRight);    
+    this.checkPath(board, this.moveUp, kingIsSafe);
+    this.checkPath(board, this.moveDown, kingIsSafe);
+    this.checkPath(board, this.moveLeft, kingIsSafe);
+    this.checkPath(board, this.moveRight, kingIsSafe);
+    this.checkPath(board, this.moveUpLeft, kingIsSafe);
+    this.checkPath(board, this.moveUpRight, kingIsSafe);
+    this.checkPath(board, this.moveDownLeft, kingIsSafe);
+    this.checkPath(board, this.moveDownRight, kingIsSafe);    
 
     /* 
     // rook moves
@@ -481,7 +513,6 @@ class Queen extends ChessPiece {
     } */
   }
 }
-
 
 
 
