@@ -213,8 +213,8 @@ class Chess {
       this.whiteHasMoves = false;
     if (blackMoves.length === 0)
       this.blackHasMoves = false;
-    console.log('whiteMoves: ', whiteMoves)
-    console.log('blackMoves: ', blackMoves);
+    // console.log('whiteMoves: ', whiteMoves)
+    // console.log('blackMoves: ', blackMoves);
   }  
 }
 
@@ -288,7 +288,7 @@ class ChessPiece { // treat it as an abstract class
       if (posMoves[i][0] === move[0] && posMoves[i][1] === move[1])
         return true;
     }
-    console.log(`no, you can't move there`);
+    // console.log(`no, you can't move there`);
     return false;
   }
 
@@ -300,7 +300,7 @@ class ChessPiece { // treat it as an abstract class
       if (posMoves[i][0] === move[0] && posMoves[i][1] === move[1])
         return true;
     }
-    console.log('No, you can\'t attack that');
+    // console.log('No, you can\'t attack that');
     return false;
   }
 

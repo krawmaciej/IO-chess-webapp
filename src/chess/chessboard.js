@@ -81,7 +81,7 @@ const moveChessPiece = (targetElem, callback) => {
   const activeElem = container.activeElement; 
   const chess = container.chess;
 
-  console.log(chess.thisPlayerColor, container.activePlayerColor)
+  // console.log(chess.thisPlayerColor, container.activePlayerColor)
   if (chess.thisPlayerColor !== container.activePlayerColor) {
     alert(`It's not your turn yet!`);
     return;
@@ -93,8 +93,8 @@ const moveChessPiece = (targetElem, callback) => {
   {
     saveMoveData(container, targetElem); // save relevant data for future
     //targetElem.chessPiece.calculateMoves(board); // calculate possible moves for active chess piece
-    console.log('possible moves --> ', targetElem.chessPiece.regularMoves); // TEMP
-    console.log('possible attacks --> ', targetElem.chessPiece.attackMoves);    
+    //console.log('possible moves --> ', targetElem.chessPiece.regularMoves); // TEMP
+    //console.log('possible attacks --> ', targetElem.chessPiece.attackMoves);    
   }
   // IF CHESSPIECE IS ALREADY CHOSEN
   else if (container.switcher && activeElem) 

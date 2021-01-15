@@ -71,7 +71,7 @@ export default class Play extends React.Component {
     // listen to added moves, on start load each added move seperately (in order)
     this.state.gameRef.child("moves").on("child_added", data => {
       // 4) when changed, get new moves from db and update local board
-      console.log(data.val());
+      // console.log(data.val());
       this.loadMoves(data.val());
     });
 
@@ -115,7 +115,7 @@ export default class Play extends React.Component {
     // checkmate
     drawChessPieces(this.state.game.activePlayerColor); 
 
-    console.log('is Game Over? -- ', this.state.game.activePlayerColor)
+    // console.log('is Game Over? -- ', this.state.game.activePlayerColor)
     if (this.state.chess.isGameOver()) {
       this.finishGame();
     }
