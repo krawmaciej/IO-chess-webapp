@@ -1,73 +1,14 @@
-import { initChessPieces, CHESS_COLORS } from './chess';
-// import { CHESS_COLORS } from '../../chess/chess.js';
-const initBoard = () => {
-  const cp = initChessPieces();
-  const board = [];
-  for (let i = 0; i < 8; i++)
-    board[i] = [];
-  for(const c in cp) {
-    cp[c].board = board;
-  }
-
-  // WHITE
-  board[cp.wPawn0.posX][cp.wPawn0.posY] = cp.wPawn0;
-  board[cp.wPawn1.posX][cp.wPawn1.posY] = cp.wPawn1;
-  board[cp.wPawn2.posX][cp.wPawn2.posY] = cp.wPawn2;
-  board[cp.wPawn3.posX][cp.wPawn3.posY] = cp.wPawn3;
-  board[cp.wPawn4.posX][cp.wPawn4.posY] = cp.wPawn4;
-  board[cp.wPawn5.posX][cp.wPawn5.posY] = cp.wPawn5;
-  board[cp.wPawn6.posX][cp.wPawn6.posY] = cp.wPawn6;
-  board[cp.wPawn7.posX][cp.wPawn7.posY] = cp.wPawn7;
-  board[cp.wRook0.posX][cp.wRook0.posY] = cp.wRook0;    
-  board[cp.wRook1.posX][cp.wRook1.posY] = cp.wRook1;
-  board[cp.wKnight0.posX][cp.wKnight0.posY] = cp.wKnight0;
-  board[cp.wKnight1.posX][cp.wKnight1.posY] = cp.wKnight1;
-  board[cp.wBishop0.posX][cp.wBishop0.posY] = cp.wBishop0;  
-  board[cp.wBishop1.posX][cp.wBishop1.posY] = cp.wBishop1; 
-  board[cp.wKing.posX][cp.wKing.posY] = cp.wKing;  
-  board[cp.wQueen.posX][cp.wQueen.posY] = cp.wQueen;   
-  
-  // BLACK
-  board[cp.bPawn0.posX][cp.bPawn0.posY] = cp.bPawn0;
-  board[cp.bPawn1.posX][cp.bPawn1.posY] = cp.bPawn1;
-  board[cp.bPawn2.posX][cp.bPawn2.posY] = cp.bPawn2;
-  board[cp.bPawn3.posX][cp.bPawn3.posY] = cp.bPawn3;
-  board[cp.bPawn4.posX][cp.bPawn4.posY] = cp.bPawn4;
-  board[cp.bPawn5.posX][cp.bPawn5.posY] = cp.bPawn5;
-  board[cp.bPawn6.posX][cp.bPawn6.posY] = cp.bPawn6;
-  board[cp.bPawn7.posX][cp.bPawn7.posY] = cp.bPawn7;
-  board[cp.bRook0.posX][cp.bRook0.posY] = cp.bRook0;    
-  board[cp.bRook1.posX][cp.bRook1.posY] = cp.bRook1;
-  board[cp.bKnight0.posX][cp.bKnight0.posY] = cp.bKnight0;
-  board[cp.bKnight1.posX][cp.bKnight1.posY] = cp.bKnight1;
-  board[cp.bBishop0.posX][cp.bBishop0.posY] = cp.bBishop0;  
-  board[cp.bBishop1.posX][cp.bBishop1.posY] = cp.bBishop1; 
-  board[cp.bKing.posX][cp.bKing.posY] = cp.bKing;  
-  board[cp.bQueen.posX][cp.bQueen.posY] = cp.bQueen; 
-  
-  // BLANK
-  for (let i = 0; i < 8; i++) 
-    for (let j = 2; j < 6; j++)
-      board[j][i] = false;
-
-  // King
-  board.kings = { wKing: cp.wKing, bKing: cp.bKing }
-
-  console.log(cp);
-  return board;
-}
+import { CHESS_COLORS } from './chess';
 
 // drawing board
-const drawBoard = (board, callback, color) => {
+const drawBoard = (chess, callback) => {
   const container = document.getElementById('chessBoard');
-  container.board = board;
   container.switcher = false;
-  container.kingIsChecked = false;
-  container.kings = { wKing: board[7][4], bKing: board[0][4] };
+  container.chess = chess;
   let toggle = true;
 
   // draw tiles
-  if (color === CHESS_COLORS.WHITE) {    
+  if (chess.thisPlayerColor === CHESS_COLORS.WHITE) {    
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 8; j++) {
         container.appendChild(makeTile(toggle, i, j));      
@@ -76,10 +17,10 @@ const drawBoard = (board, callback, color) => {
       toggle = !toggle;
     }
   }
-  else if (color === CHESS_COLORS.BLACK) {
+  else if (chess.thisPlayerColor === CHESS_COLORS.BLACK) {
     for (let i = 7; i >= 0; i--) {
       for (let j = 0; j < 8; j++) {
-        container.appendChild(makeTile(!toggle, i, j));      
+        container.appendChild(makeTile(toggle, i, j));      
         toggle = !toggle;
       }
       toggle = !toggle;
@@ -109,13 +50,13 @@ const makeTile = (color, x, y) => {
 
 // drawing chess pieces
 // put chess pieces to starting positions
-const drawChessPieces = (board, props) => {
+const drawChessPieces = (color) => {
   const container = document.getElementById('chessBoard');
-  container.props = props;
+  container.activePlayerColor = color;
 
-  for (let i = 0; i < board.length; i++) {
-    for (let j = 0; j < board[i].length; j++) {
-      insertChessPiece(board[i][j], i, j);
+  for (let i = 0; i < container.chess.board.length; i++) {
+    for (let j = 0; j < container.chess.board[i].length; j++) {
+      insertChessPiece(container.chess.board[i][j], i, j);
     }
   }
 }
@@ -138,20 +79,20 @@ const insertChessPiece = (e, posX, posY) => {
 const moveChessPiece = (targetElem, callback) => { 
   const container = targetElem.parentElement;
   const activeElem = container.activeElement; 
-  const board = container.board;
-  const props = container.props;
+  const chess = container.chess;
 
-  if (props.thisPlayerColor !== props.activePlayerColor) {
+  console.log(chess.thisPlayerColor, container.activePlayerColor)
+  if (chess.thisPlayerColor !== container.activePlayerColor) {
     alert(`It's not your turn yet!`);
     return;
   } 
 
   // IF CHESSPIECE IS NOT CHOSEN YET
   if (!targetElem.parentElement.switcher && 
-      targetElem.chessPiece && targetElem.chessPiece.color === props.thisPlayerColor) 
+      targetElem.chessPiece && targetElem.chessPiece.color === chess.thisPlayerColor) 
   {
     saveMoveData(container, targetElem); // save relevant data for future
-    targetElem.chessPiece.calculateMoves(board); // calculate possible moves for active chess piece
+    //targetElem.chessPiece.calculateMoves(board); // calculate possible moves for active chess piece
     console.log('possible moves --> ', targetElem.chessPiece.regularMoves); // TEMP
     console.log('possible attacks --> ', targetElem.chessPiece.attackMoves);    
   }
@@ -176,11 +117,6 @@ const moveChessPiece = (targetElem, callback) => {
   }
 }
 
-const makeMove = (board, move) => {
-  board[move.From.x][move.From.y].setPositions(move.To.x, move.To.y); //positions
-  board[move.To.x][move.To.y] = board[move.From.x][move.From.y];
-  board[move.From.x][move.From.y] = false;
-}
 
 const saveMoveData = (container, targetElem) => {
   container.switcher = true;
@@ -196,5 +132,4 @@ const parseElemId = e => {
 }
 
 
-
-export { initBoard, drawBoard, drawChessPieces, makeMove };
+export { drawBoard, drawChessPieces };

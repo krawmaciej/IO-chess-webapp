@@ -1,6 +1,5 @@
 // module "chess.js"
 /* eslint-disable no-unused-expressions */
-
 const STATIC_ID = {
   'Pawn': 0,
   'Rook': 0,
@@ -9,12 +8,10 @@ const STATIC_ID = {
   'Queen': 0,
   'King': 0
 }
-
 const CHESS_COLORS = { // chess color enum
   WHITE: 'white',
   BLACK: 'black'
-};
-
+}
 const CHESS_TYPES = {
   PAWN: 'Pawn',
   ROOK: 'Rook',
@@ -23,26 +20,204 @@ const CHESS_TYPES = {
   KING: 'King',
   QUEEN: "Queen",
 }
-
 const XY = (x, y) => {
   return {
     x: x,
     y: y
   }
 }
-
 const FromTo = (o1, o2) => {
   return {
     From: o1,
     To: o2
   }
 }
-
 const isWithinBound = (obj) => {
   if (obj.x > 7 || obj.x < 0 || obj.y > 7 || obj.y < 0)
     return false;
   return true;
 }
+
+class Chess {
+  constructor(color) {
+    this.board = this.initBoard();
+    this.calculateMoves();
+    this.thisPlayerColor = color;
+    this.whiteHasMoves = true;
+    this.blackHasMoves = true;
+    this.winner = "";
+  }
+
+  initChessPieces = () => {
+    return {
+      wPawn0: new Pawn(CHESS_COLORS.WHITE, 6, 0),
+      wPawn1: new Pawn(CHESS_COLORS.WHITE, 6, 1),
+      wPawn2: new Pawn(CHESS_COLORS.WHITE, 6, 2),
+      wPawn3: new Pawn(CHESS_COLORS.WHITE, 6, 3),
+      wPawn4: new Pawn(CHESS_COLORS.WHITE, 6, 4),
+      wPawn5: new Pawn(CHESS_COLORS.WHITE, 6, 5),
+      wPawn6: new Pawn(CHESS_COLORS.WHITE, 6, 6),
+      wPawn7: new Pawn(CHESS_COLORS.WHITE, 6, 7),
+      wRook0: new Rook(CHESS_COLORS.WHITE, 7, 0),
+      wRook1: new Rook(CHESS_COLORS.WHITE, 7, 7),
+      wKnight0: new Knight(CHESS_COLORS.WHITE, 7, 1),
+      wKnight1: new Knight(CHESS_COLORS.WHITE, 7, 6),
+      wBishop0: new Bishop(CHESS_COLORS.WHITE, 7, 2),
+      wBishop1: new Bishop(CHESS_COLORS.WHITE, 7, 5),
+      wKing: new King(CHESS_COLORS.WHITE, 7, 4),
+      wQueen: new Queen(CHESS_COLORS.WHITE, 7, 3),
+  
+      bPawn0: new Pawn(CHESS_COLORS.BLACK, 1, 0),
+      bPawn1: new Pawn(CHESS_COLORS.BLACK, 1, 1),
+      bPawn2: new Pawn(CHESS_COLORS.BLACK, 1, 2),
+      bPawn3: new Pawn(CHESS_COLORS.BLACK, 1, 3),
+      bPawn4: new Pawn(CHESS_COLORS.BLACK, 1, 4),
+      bPawn5: new Pawn(CHESS_COLORS.BLACK, 1, 5),
+      bPawn6: new Pawn(CHESS_COLORS.BLACK, 1, 6),
+      bPawn7: new Pawn(CHESS_COLORS.BLACK, 1, 7),
+      bRook0: new Rook(CHESS_COLORS.BLACK, 0, 0),
+      bRook1: new Rook(CHESS_COLORS.BLACK, 0, 7),
+      bKnight0: new Knight(CHESS_COLORS.BLACK, 0, 1),
+      bKnight1: new Knight(CHESS_COLORS.BLACK, 0, 6),
+      bBishop0: new Bishop(CHESS_COLORS.BLACK, 0, 2),
+      bBishop1: new Bishop(CHESS_COLORS.BLACK, 0, 5),
+      bKing: new King(CHESS_COLORS.BLACK, 0, 4),
+      bQueen: new Queen(CHESS_COLORS.BLACK, 0, 3)
+    }
+  }
+  
+  initBoard = () => {
+    const cp = this.initChessPieces();
+    const board = [];
+    for (let i = 0; i < 8; i++)
+      board[i] = [];
+    for(const c in cp) {
+      cp[c].chess = this;
+    }
+  
+    // WHITE
+    board[cp.wPawn0.posX][cp.wPawn0.posY] = cp.wPawn0;
+    board[cp.wPawn1.posX][cp.wPawn1.posY] = cp.wPawn1;
+    board[cp.wPawn2.posX][cp.wPawn2.posY] = cp.wPawn2;
+    board[cp.wPawn3.posX][cp.wPawn3.posY] = cp.wPawn3;
+    board[cp.wPawn4.posX][cp.wPawn4.posY] = cp.wPawn4;
+    board[cp.wPawn5.posX][cp.wPawn5.posY] = cp.wPawn5;
+    board[cp.wPawn6.posX][cp.wPawn6.posY] = cp.wPawn6;
+    board[cp.wPawn7.posX][cp.wPawn7.posY] = cp.wPawn7;
+    board[cp.wRook0.posX][cp.wRook0.posY] = cp.wRook0;    
+    board[cp.wRook1.posX][cp.wRook1.posY] = cp.wRook1;
+    board[cp.wKnight0.posX][cp.wKnight0.posY] = cp.wKnight0;
+    board[cp.wKnight1.posX][cp.wKnight1.posY] = cp.wKnight1;
+    board[cp.wBishop0.posX][cp.wBishop0.posY] = cp.wBishop0;  
+    board[cp.wBishop1.posX][cp.wBishop1.posY] = cp.wBishop1; 
+    board[cp.wKing.posX][cp.wKing.posY] = cp.wKing;  
+    board[cp.wQueen.posX][cp.wQueen.posY] = cp.wQueen;   
+    
+    // BLACK
+    board[cp.bPawn0.posX][cp.bPawn0.posY] = cp.bPawn0;
+    board[cp.bPawn1.posX][cp.bPawn1.posY] = cp.bPawn1;
+    board[cp.bPawn2.posX][cp.bPawn2.posY] = cp.bPawn2;
+    board[cp.bPawn3.posX][cp.bPawn3.posY] = cp.bPawn3;
+    board[cp.bPawn4.posX][cp.bPawn4.posY] = cp.bPawn4;
+    board[cp.bPawn5.posX][cp.bPawn5.posY] = cp.bPawn5;
+    board[cp.bPawn6.posX][cp.bPawn6.posY] = cp.bPawn6;
+    board[cp.bPawn7.posX][cp.bPawn7.posY] = cp.bPawn7;
+    board[cp.bRook0.posX][cp.bRook0.posY] = cp.bRook0;    
+    board[cp.bRook1.posX][cp.bRook1.posY] = cp.bRook1;
+    board[cp.bKnight0.posX][cp.bKnight0.posY] = cp.bKnight0;
+    board[cp.bKnight1.posX][cp.bKnight1.posY] = cp.bKnight1;
+    board[cp.bBishop0.posX][cp.bBishop0.posY] = cp.bBishop0;  
+    board[cp.bBishop1.posX][cp.bBishop1.posY] = cp.bBishop1; 
+    board[cp.bKing.posX][cp.bKing.posY] = cp.bKing;  
+    board[cp.bQueen.posX][cp.bQueen.posY] = cp.bQueen; 
+    
+    // BLANK
+    for (let i = 0; i < 8; i++) 
+      for (let j = 2; j < 6; j++)
+        board[j][i] = false;
+  
+    // King
+    board.kings = { wKing: cp.wKing, bKing: cp.bKing }
+  
+    return board;
+  }
+
+  copyBoard() {
+    const res = [];
+
+    for (let i = 0; i < this.board.length; i++) {
+      const tmp = [];
+      for(let j = 0; j < this.board[i].length; j++) {
+        tmp.push(this.board[i][j]);
+      }
+      res.push(tmp);
+    }
+    res.kings = this.board.kings;  
+
+    return res;
+  }
+
+  makeMove(move) {
+    this.board[move.From.x][move.From.y].setPositions(move.To.x, move.To.y); //positions
+    this.board[move.To.x][move.To.y] = this.board[move.From.x][move.From.y];
+    this.board[move.From.x][move.From.y] = false;
+  }
+
+  simulateMove(board, move) {
+    board[move.From.x][move.From.y].setPositions(move.To.x, move.To.y); //positions
+    board[move.To.x][move.To.y] = board[move.From.x][move.From.y];
+    board[move.From.x][move.From.y] = false;
+  }
+
+  revertSimulation(board, move) {
+    board[move.To.x][move.To.y].setPositions(move.From.x, move.From.y);
+  }
+
+  isGameOver(color) {
+    if (!this.whiteHasMoves) {
+      this.winner = CHESS_COLORS.BLACK;
+      return true;
+    }
+    if (!this.blackHasMoves) {
+      this.winner = CHESS_COLORS.WHITE;
+      return true;
+    }      
+    return false;
+  }
+
+  calculateMoves() {
+    const whiteMoves = [], blackMoves = [];
+    this.board.forEach(row => {
+      row.forEach(cp => {
+        if (cp)
+          cp.calculateMoves(this.board);
+          if (cp.color === CHESS_COLORS.WHITE) {
+            cp.regularMoves.forEach(m => {
+              whiteMoves.push(m);
+            })
+            cp.attackMoves.forEach(m => {
+              whiteMoves.push(m);
+            })
+          }            
+          else if (cp.color === CHESS_COLORS.BLACK) {
+            cp.regularMoves.forEach(m => {
+              blackMoves.push(m);
+            })
+            cp.attackMoves.forEach(m => {
+              blackMoves.push(m);
+            })
+          }
+      })
+    })
+    if (whiteMoves.length === 0)
+      this.whiteHasMoves = false;
+    if (blackMoves.length === 0)
+      this.blackHasMoves = false;
+    console.log('whiteMoves: ', whiteMoves)
+    console.log('blackMoves: ', blackMoves);
+  }  
+}
+
 class ChessPiece { // treat it as an abstract class
   constructor(color, posX, posY) {
     this.id;
@@ -105,10 +280,6 @@ class ChessPiece { // treat it as an abstract class
     
   }
 
-  calculateMoves(board) {
-    console.log(`Not implemented for "${this.type}" yet`);
-  }
-
   moveIsPossible(id) {
     const move = [parseInt(id.substr(0, 1)), parseInt(id.substr(2, 1))];
     const posMoves = this.regularMoves;
@@ -134,42 +305,19 @@ class ChessPiece { // treat it as an abstract class
   }
 
 
+
   // for checkmate
-  copyBoard(board) {
-    const res = [];
-
-    for (let i = 0; i < board.length; i++) {
-      const tmp = [];
-      for(let j = 0; j < board[i].length; j++) {
-        tmp.push(board[i][j]);
-      }
-      res.push(tmp);
-    }
-    res.kings = board.kings;  
-
-    return res;
-  }
-
-  simulateMove(board, move) {
-    board[move.From.x][move.From.y].setPositions(move.To.x, move.To.y); //positions
-    board[move.To.x][move.To.y] = board[move.From.x][move.From.y];
-    board[move.From.x][move.From.y] = false;
-  }
-
-  revertSimulation(board, move) {
-    board[move.To.x][move.To.y].setPositions(move.From.x, move.From.y);
-  }
 
   isKingSafeAfterMove(board, move) {
     const thisKing = this.color === CHESS_COLORS.WHITE ? board.kings.wKing : board.kings.bKing;
     const isKingChecked = thisKing.isChecked(board); // <-
-    const newBoard = this.copyBoard(board); // <- 64
-    this.simulateMove(newBoard, move);
+    const newBoard = this.chess.copyBoard(board); // <- 64
+    this.chess.simulateMove(newBoard, move);
     const newKing = this.color === CHESS_COLORS.WHITE ? newBoard.kings.wKing : newBoard.kings.bKing;
     const isNewKingChecked = newKing.isChecked(newBoard); // <-
-    this.revertSimulation(newBoard, move);
+    this.chess.revertSimulation(newBoard, move);
 
-    console.log('simulated move: ', move.From, '->', move.To);
+    //console.log('simulated move: ', move.From, '->', move.To);
 
     if(!isKingChecked) {        
       if (!isNewKingChecked)
@@ -186,10 +334,11 @@ class ChessPiece { // treat it as an abstract class
   }
 
   isKingSafe(kingIsSafe, current, next) {
-    return kingIsSafe ? true : this.isKingSafeAfterMove(this.board, FromTo(current, next));
+    return kingIsSafe ? true : this.isKingSafeAfterMove(this.chess.board, FromTo(current, next));
   }
 
   // basic moves
+
   moveUp(o) {
     return XY(o.x - 1, o.y);
   }
@@ -356,29 +505,6 @@ class Bishop extends ChessPiece {
     this.checkPath(board, this.moveUpRight, kingIsSafe);
     this.checkPath(board, this.moveDownLeft, kingIsSafe);
     this.checkPath(board, this.moveDownRight, kingIsSafe);
-
-
-    /* 
-    // up-left to down-right
-    const diff = Math.min(this.posX, this.posY);    
-    let x = this.posX - diff,
-        y = this.posY - diff;
-    while(x <= 7 && y <= 7) {
-      if (x !== this.posX || y !== this.posY)      
-        this.regularMoves.push([x, y]);
-      x++; y++; 
-   
-    }
-
-    // down-left to up-right
-    x = this.posX + this.posY > 7 ? 7 : this.posX + this.posY,
-    y = x === 7 ? (this.posX + this.posY) % 7 : 0;
-    while(x >= 0 && y <= 7) { // stop when (x < 0 OR y > 7)
-      if (x !== this.posX && y !== this.posY)
-        this.regularMoves.push([x, y]);
-      x--; y++;
-    }
-     */
   }
 }
 
@@ -409,7 +535,7 @@ class King extends ChessPiece {
         if(cp && cp.color === this.color)
             break;
         else if (cp && cp.color !== this.color) {
-          cp.calculateMoves(board, true);
+          cp.calculateMoves(board, true); // THIS IS GOING TO BE GONE
           if (cp.attackMoves && this.isKingInDanger(cp.attackMoves)) {
             this.threatPos = curPos;         
             return true;
@@ -473,7 +599,6 @@ class Queen extends ChessPiece {
   }
 
   calculateMoves(board, kingIsSafe) {
-    // clear old data (bad place to do it, I know)
     this.regularMoves.splice(0);
     this.attackMoves.splice(0);
 
@@ -486,77 +611,11 @@ class Queen extends ChessPiece {
     this.checkPath(board, this.moveDownLeft, kingIsSafe);
     this.checkPath(board, this.moveDownRight, kingIsSafe);    
 
-    /* 
-    // rook moves
-    for (let i = 0; i < 8; i++) {
-      if (i !== this.posX)
-        this.regularMoves.push([ i, this.posY ]);
-      if (i !== this.posY)
-        this.regularMoves.push([ this.posX, i]);
-    }
-    // bishop moves
-    const diff = Math.min(this.posX, this.posY);    
-    let x = this.posX - diff,
-        y = this.posY - diff;
-    while(x <= 7 && y <= 7) {
-      if (x !== this.posX || y !== this.posY)      
-        this.regularMoves.push([x, y]);
-      x++; y++;
-    }
-
-    x = this.posX + this.posY > 7 ? 7 : this.posX + this.posY,
-    y = x === 7 ? (this.posX + this.posY) % 7 : 0;
-    while(x >= 0 && y <= 7) { // stop when (x < 0 OR y > 7)
-      if (x !== this.posX && y !== this.posY)
-        this.regularMoves.push([x, y]);
-      x--; y++;
-    } */
   }
 }
 
 
 
-// initialize chess piece objects
-const initChessPieces = () => {
-  for (var e in STATIC_ID) {
-    STATIC_ID[e] = 0;
-  }
-  return {
-    wPawn0: new Pawn(CHESS_COLORS.WHITE, 6, 0),
-    wPawn1: new Pawn(CHESS_COLORS.WHITE, 6, 1),
-    wPawn2: new Pawn(CHESS_COLORS.WHITE, 6, 2),
-    wPawn3: new Pawn(CHESS_COLORS.WHITE, 6, 3),
-    wPawn4: new Pawn(CHESS_COLORS.WHITE, 6, 4),
-    wPawn5: new Pawn(CHESS_COLORS.WHITE, 6, 5),
-    wPawn6: new Pawn(CHESS_COLORS.WHITE, 6, 6),
-    wPawn7: new Pawn(CHESS_COLORS.WHITE, 6, 7),
-    wRook0: new Rook(CHESS_COLORS.WHITE, 7, 0),
-    wRook1: new Rook(CHESS_COLORS.WHITE, 7, 7),
-    wKnight0: new Knight(CHESS_COLORS.WHITE, 7, 1),
-    wKnight1: new Knight(CHESS_COLORS.WHITE, 7, 6),
-    wBishop0: new Bishop(CHESS_COLORS.WHITE, 7, 2),
-    wBishop1: new Bishop(CHESS_COLORS.WHITE, 7, 5),
-    wKing: new King(CHESS_COLORS.WHITE, 7, 4),
-    wQueen: new Queen(CHESS_COLORS.WHITE, 7, 3),
-
-    bPawn0: new Pawn(CHESS_COLORS.BLACK, 1, 0),
-    bPawn1: new Pawn(CHESS_COLORS.BLACK, 1, 1),
-    bPawn2: new Pawn(CHESS_COLORS.BLACK, 1, 2),
-    bPawn3: new Pawn(CHESS_COLORS.BLACK, 1, 3),
-    bPawn4: new Pawn(CHESS_COLORS.BLACK, 1, 4),
-    bPawn5: new Pawn(CHESS_COLORS.BLACK, 1, 5),
-    bPawn6: new Pawn(CHESS_COLORS.BLACK, 1, 6),
-    bPawn7: new Pawn(CHESS_COLORS.BLACK, 1, 7),
-    bRook0: new Rook(CHESS_COLORS.BLACK, 0, 0),
-    bRook1: new Rook(CHESS_COLORS.BLACK, 0, 7),
-    bKnight0: new Knight(CHESS_COLORS.BLACK, 0, 1),
-    bKnight1: new Knight(CHESS_COLORS.BLACK, 0, 6),
-    bBishop0: new Bishop(CHESS_COLORS.BLACK, 0, 2),
-    bBishop1: new Bishop(CHESS_COLORS.BLACK, 0, 5),
-    bKing: new King(CHESS_COLORS.BLACK, 0, 4),
-    bQueen: new Queen(CHESS_COLORS.BLACK, 0, 3)
-  }
-}
 
 const generateChessColor = () => {
   const colorIndex = Math.floor(Math.random() * 2); // randomize player's color
@@ -568,4 +627,4 @@ const generateChessColor = () => {
   return CHESS_COLORS.BLACK;
 }
 
-export { CHESS_COLORS, initChessPieces, generateChessColor };
+export { CHESS_COLORS, generateChessColor, Chess };

@@ -1,6 +1,6 @@
 import React from 'react';
-import { CHESS_COLORS } from '../../chess/chess.js';
-import { initBoard, drawBoard, drawChessPieces, makeMove} from '../../chess/chessboard.js';
+import { CHESS_COLORS, Chess } from '../../chess/chess.js';
+import { drawBoard, drawChessPieces } from '../../chess/chessboard.js';
 import { database } from '../../firebase/firebase';
 import { userCachedData } from '../../user/userData';
 import '../../chess/chessboard.css';
@@ -9,7 +9,7 @@ import './Play.css';
 export default class Play extends React.Component {
   constructor() {
     super();    
-    const chessBoard = initBoard(); // put pieces on board
+    const chess = new Chess(userCachedData.color);
     gameTimer();
     this.state = {
       gameRef: database().ref("games").child(userCachedData.gameId), // reference to game in database
@@ -20,11 +20,7 @@ export default class Play extends React.Component {
         winner: "",   
         moves: []    
       },
-      board: chessBoard,
-      props: {
-        activePlayerColor: "",
-        thisPlayerColor: userCachedData.color,
-      }
+      chess: chess
     };
   }
 
@@ -44,6 +40,7 @@ export default class Play extends React.Component {
           <p>Pozostały czas: <span id="timer">-:-</span></p>
         </div>
         <button onClick={() => { this.RESET() }}>CLEAR MOVES</button>
+        <button onClick={() => { console.log(this) }}>this</button>
       </div>
     );
   }
@@ -59,6 +56,7 @@ export default class Play extends React.Component {
     // at the beginning cache whole game data from server
     this.state.gameRef.once("value", data => {
       this.cacheGameData(data.val()); 
+      drawChessPieces(this.state.game.activePlayerColor);
     });
 
     // 1) init board state and draw a board
@@ -67,9 +65,7 @@ export default class Play extends React.Component {
     // 4) when changed, get new moves from db and update local board
 
     // 1) init board state and draw a board
-    drawBoard(this.state.board, this.sendData, userCachedData.color);  
-    drawChessPieces(this.state.board, this.state.props);
-
+    drawBoard(this.state.chess, this.sendData);
 
     // 3) listen to changes on Moves
     // listen to added moves, on start load each added move seperately (in order)
@@ -95,11 +91,6 @@ export default class Play extends React.Component {
       moves: data.moves
     }
     this.setState({ game: gameData });
-
-    const propsData = this.state.props;
-    propsData.activePlayerColor = this.state.game.activePlayerColor;
-    this.setState({ props: propsData });
-    // console.log("current state: ", this.state.game);
   }
 
   sendData = (move) => {
@@ -118,43 +109,30 @@ export default class Play extends React.Component {
   }
 
   loadMoves = (move) => {
-    makeMove(this.state.board, move);
+    //console.log("THIS -->", this);
+    this.state.chess.makeMove(move);
+    this.state.chess.calculateMoves();
     // checkmate
-    drawChessPieces(this.state.board, this.state.props);
-    checkmate(this.state.board, userCachedData.color);
+    drawChessPieces(this.state.game.activePlayerColor); 
+
+    console.log('is Game Over? -- ', this.state.game.activePlayerColor)
+    if (this.state.chess.isGameOver()) {
+      this.finishGame();
+    }
   }
 
   updatePageActivePlayerColor(data) {
     const gameData = this.state.game;
     gameData.activePlayerColor = data;
     this.setState({ game: gameData });
-
-    const propsData = this.state.props;
-    propsData.activePlayerColor = this.state.game.activePlayerColor;
-    this.setState({ props: propsData });
+    const container = document.getElementById("chessBoard");
+    container.activePlayerColor = gameData.activePlayerColor;
   }    
-}
 
-
-const checkmate = (board, color) => {
-  const allRegularMoves = [];
-  const allAttackMoves = [];
-  console.log(color)
-  for (let i = 0; i < board.length; i++) {
-    for (let j = 0; j< board[i].length; j++) {
-      if (board[i][j] && board[i][j].color === color) {
-        board[i][j].calculateMoves(board);
-        board[i][j].regularMoves.forEach(m => {
-          allRegularMoves.push(m);
-        });
-        board[i][j].attackMoves.forEach(m => {
-          allAttackMoves.push(m);
-        });
-      }
-    }
+  finishGame() {
+    alert(`Game Over. ${this.state.chess.winner} won the game!`);
+    this.state.gameRef.child('winner').set(this.state.chess.winner);
   }
-  if (allRegularMoves.length === 0 && allAttackMoves.length === 0)
-    alert("Checkmate. You lost!")
 }
 
 
