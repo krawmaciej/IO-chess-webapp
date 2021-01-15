@@ -119,7 +119,9 @@ export default class Play extends React.Component {
 
   loadMoves = (move) => {
     makeMove(this.state.board, move);
+    // checkmate
     drawChessPieces(this.state.board, this.state.props);
+    checkmate(this.state.board, userCachedData.color);
   }
 
   updatePageActivePlayerColor(data) {
@@ -133,6 +135,27 @@ export default class Play extends React.Component {
   }    
 }
 
+
+const checkmate = (board, color) => {
+  const allRegularMoves = [];
+  const allAttackMoves = [];
+  console.log(color)
+  for (let i = 0; i < board.length; i++) {
+    for (let j = 0; j< board[i].length; j++) {
+      if (board[i][j] && board[i][j].color === color) {
+        board[i][j].calculateMoves(board);
+        board[i][j].regularMoves.forEach(m => {
+          allRegularMoves.push(m);
+        });
+        board[i][j].attackMoves.forEach(m => {
+          allAttackMoves.push(m);
+        });
+      }
+    }
+  }
+  if (allRegularMoves.length === 0 && allAttackMoves.length === 0)
+    alert("Checkmate. You lost!")
+}
 
 
 //GAME TIMER
