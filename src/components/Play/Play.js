@@ -7,7 +7,7 @@ import '../../chess/chessboard.css';
 import './Play.css';
 
 import Popup from 'reactjs-popup';
-import '../Home/invite.css';
+import './invite.css';
 
 const gameOverPopup = (winner, goToHome)=> (
   <Popup

@@ -1,4 +1,5 @@
 .modal {
+  text-align: center;
   font-size: 12px;
   background-color: #ffffff;
   padding: 10px;
@@ -13,6 +14,7 @@
   padding: 5px;
 }
 .modal > .content {
+  text-align: center;
   width: 100%;
   padding: 10px 5px;
 }

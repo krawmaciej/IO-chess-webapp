@@ -12,8 +12,8 @@ const inviteSent = (hasActiveUserSentInvite) => (
     modal
   >
     {close => (
-      <div className="inviteSent">
-        <div className="header">
+      <div className="modal">
+        <div className="content">
           {' '}
           Invite sent!
         </div>

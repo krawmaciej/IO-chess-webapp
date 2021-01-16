@@ -14,7 +14,7 @@ const invite = (showInvite, setShowInvite, invitorUsername, inviteKey, acceptInv
   >
     {close => (
       <div className="modal">
-        <div className="header">Invitation from</div>
+        <div className="header">Invitation</div>
         <div className="content">
           {' '}
           You have been invited to a game by {invitorUsername}!
