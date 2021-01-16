@@ -41,7 +41,11 @@ export default function UserRow(props) {
   return (
     <tr>
       {inviteSent(hasActiveUserSentInvite)}
-      <td>{props.email}</td>
+      <td>{getUsername(props.email)}</td>
+      <td>{props.gamesWon}</td>
+      <td>{calculateGamesLost(props.gamesWon, props.totalGamesPlayed)}</td>
+      <td>{props.totalGamesPlayed}</td>
+      <td>{calculateWinRatio(props.gamesWon, props.totalGamesPlayed)}%</td>
       <td>{isPlayingMessage(props.gameId)}</td>
       <td>{sendInviteToGame(props, hasActiveUserSentInvite, setHasActiveUserSentInvite, goToGame)}</td>
     </tr>
@@ -100,7 +104,6 @@ function sendGameInvite(enemyId, setHasActiveUserSentInvite, goToGame) {
         inviteRef.child("isCancelled").off(); // remove listener
         setHasActiveUserSentInvite(false);
         CreateGameForTwoPlayers(enemyId, goToGame, () => inviteRef.child("isGameStarted").set(true));
-        // make invite inactive
       }
     });
 
@@ -118,8 +121,24 @@ function sendGameInvite(enemyId, setHasActiveUserSentInvite, goToGame) {
   }, (err) => {
       throw err;
   });
+  
 }
 
 function removeInvite(inviteRef) {
   inviteRef.remove();
+}
+
+function getUsername(email) {
+  return email.substring(0, email.lastIndexOf("@"));
+}
+
+function calculateGamesLost(gamesWon, totalGamesPlayed) {
+  return totalGamesPlayed - gamesWon;
+}
+
+function calculateWinRatio(gamesWon, totalGamesPlayed) {
+  if (totalGamesPlayed === 0) {
+    return 0;
+  }
+  return gamesWon/totalGamesPlayed * 100; 
 }

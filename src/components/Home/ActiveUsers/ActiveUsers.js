@@ -26,7 +26,14 @@ export default function ActiveUsers() {
           const isNotThisUser = (userCachedData.uid === user.uid) ? false : true;
           const isLoggedIn = user.isLoggedIn;
           if (isNotThisUser && isLoggedIn) {
-            return <UserRow uid={user.uid} email={user.email} gameId={user.gameId} isLoggedIn={user.isLoggedIn}/>;
+            return <UserRow
+              uid={user.uid}
+              email={user.email}
+              gameId={user.gameId}
+              isLoggedIn={user.isLoggedIn}
+              totalGamesPlayed={user.totalGamesPlayed}
+              gamesWon={user.gamesWon}
+            />;
           }
           return null;
         })
@@ -41,7 +48,9 @@ function parseUsersDataToList(data) {
         uid: data[key].uid,
         email: data[key].email,
         gameId: data[key].gameId,
-        isLoggedIn: data[key].isLoggedIn
+        isLoggedIn: data[key].isLoggedIn,
+        totalGamesPlayed: 0,
+        gamesWon: 0
       }
       userList.push(user);
     }

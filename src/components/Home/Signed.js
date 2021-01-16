@@ -86,7 +86,17 @@ export default function Signed() {
           <button onClick={SignOut}>Logout</button>
           
           <table>
-            
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Games Won</th>
+                <th>Games Lost</th>
+                <th>Total</th>
+                <th>Winratio</th>
+                <th>Status</th>
+                <th>Invite</th>
+              </tr>
+            </thead>
             <tbody>
               <ActiveUsers />
             </tbody>
