@@ -82,8 +82,10 @@ export default class Play extends React.Component {
     // listen to who won the game
     this.state.gameRef.child("winner").on("value", data => {
       if (data.val()) {
-        this.props.history.push('/')
         this.closeGameOnDatabase(data.val());
+        alert(`Game Over. ${data.val()} won the game!`);
+        console.log("end", data.val());
+        this.props.history.push('/')
       }
     });
     
@@ -141,8 +143,11 @@ export default class Play extends React.Component {
   }
 
   finishChessGame(winner) {
-    alert(`Game Over. ${winner} won the game!`);
-    this.state.gameRef.child('winner').set(winner);
+    this.state.gameRef.child('winner').once("value", data => {
+      if (data.val() === "") { // check if someone already forfeited
+        this.state.gameRef.child('winner').set(winner);
+      }
+    });
   }
 
   closeGameOnDatabase(winner) {
