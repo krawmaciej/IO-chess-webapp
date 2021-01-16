@@ -16,6 +16,7 @@ import { invite } from "./InvitePopup";
 
 export default function Signed() {
   const [isInviteSent, setIsInviteSent] = useState(false); // TODO: take this from database instead hint: react setstate once
+  const [inviteDbId, setInviteDbId] = useState("");
   const history = useHistory();
 
   useEffect(() => {
@@ -27,7 +28,7 @@ export default function Signed() {
   invitesRef.on('value', data => {
     data.forEach((entry) => {
       if (isThisUserInvited(entry.val())) {
-        invitesRef.child(entry.key).child("isAccepted").set(true);
+        showInvite();
       }
     });
   });
@@ -55,10 +56,7 @@ export default function Signed() {
             );
         } else {
             return (
-                <div>
-                    <p>Start a simple game and wait for other player to join</p>
-                    <button onClick={waitForPlayerToJoinButton}>Play</button>
-                </div>
+                null
             );
         }
     }
@@ -74,18 +72,31 @@ export default function Signed() {
     }
 
     function acceptInvite() {
-      goToGame();
+      invitesRef.child(entry.key).child("isAccepted").set(true).then(() => {
+        invitesRef.child(entry.key).child("isGameStarted").on('value', data => {
+          if (data.val()) { // game was created then join
+            invitesRef.child(entry.key).child("isGameStarted").off(); // remove listener
+            //setHasActiveUserSentInvite(false); // close popup
+            invitesRef.child(entry.key).remove(); // remove invite
+            goToGame();
+          }
+        });
+      });
+    }
+
+    function cancelInvite() {
+
     }
 
 
 
     function showInvite() {
-
+      setIsInviteSent(true);
     }
 
     return (
         <div>
-          {invite(isInviteSent, setIsInviteSent)}
+          {invite(isInviteSent, setIsInviteSent, acceptInvite, cancelInvite)}
 
           <p>Logged in as {userCachedData.email}</p>
           <p>uid is {userCachedData.uid}</p> {/* TODO: uid for tests, remove later*/}

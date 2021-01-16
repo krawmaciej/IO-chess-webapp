@@ -1,10 +1,13 @@
 import Popup from 'reactjs-popup';
 import './invite.css';
 
-const invite = (showInvite, setShowInvite) => (
+const invite = (showInvite, setShowInvite, acceptInvite, cancelInvite) => (
   <Popup
     open={showInvite}
-    onClose={() => setShowInvite(false)}
+    onClose={() => {
+      setShowInvite(false);
+      cancelInvite();
+    }}
     modal
   >
     {close => (
@@ -15,18 +18,14 @@ const invite = (showInvite, setShowInvite) => (
         <div className="header"> Modal Title </div>
         <div className="content">
           {' '}
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque, a nostrum.
-          Dolorem, repellat quidem ut, minima sint vel eveniet quibusdam voluptates
-          delectus doloremque, explicabo tempore dicta adipisci fugit amet dignissimos?
-          <br />
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur sit
-          commodi beatae optio voluptatum sed eius cumque, delectus saepe repudiandae
-          explicabo nemo nam libero ad, doloribus, voluptas rem alias. Vitae?
+          You have been invited to a game!
         </div>
         <div className="actions">
-          <button className="button"> Trigger </button>
-          <button className="button" onClick={close}>
-            close modal
+          <button className="button" onClick={() => acceptInvite()}>
+            Accept
+          </button>
+          <button className="button" onClick={() => close}>
+            Cancel
           </button>
         </div>
       </div>

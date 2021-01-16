@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import Popup from "reactjs-popup";
 import { database } from "../../../firebase/firebase";
-import { userCachedData } from "../../../user/userData";
+import { isPlayerInGame, userCachedData } from "../../../user/userData";
 import { CreateGameForTwoPlayers } from "../WaysToStartGame/CreateGameForTwoPlayers";
 import './invite.css';
 
@@ -72,7 +72,7 @@ function isPlayingMessage(gameId) {
 
 function sendInviteToGame(user, hasActiveUserSentInvite, setHasActiveUserSentInvite, goToGame) {
   // check also on if active user sent invite
-    if (isNotInGame(user.gameId) && !hasActiveUserSentInvite) {
+    if (isNotInGame(user.gameId) && !hasActiveUserSentInvite && !isPlayerInGame()) {
       return <button onClick={() => sendGameInvite(user.uid, setHasActiveUserSentInvite, goToGame)}>Send invite</button>;
     } else {
       return null;
@@ -86,22 +86,40 @@ function sendGameInvite(enemyId, setHasActiveUserSentInvite, goToGame) {
   const invite = {
     creator: userCachedData.uid,
     joiner: enemyId,
-    isAccepted: false
+    isAccepted: false,
+    isCancelled: false,
+    isGameStarted: false,
   }
 
   inviteRef.set(invite).then(() => {
-    const myInviteRef = inviteRef.child("isAccepted");
     // const myInviteRef = database().ref("invites").child(inviteKey).child("isAccepted");
-    myInviteRef.on('value', data => {
+    inviteRef.child("isAccepted").on('value', data => {
       console.log(data.val());
-      if (data.val()) {
-        CreateGameForTwoPlayers(enemyId, goToGame);
-        // TODO: remove invite from db
+      if (data.val()) { // was accepted
+        inviteRef.child("isAccepted").off(); // remove listener
+        inviteRef.child("isCancelled").off(); // remove listener
+        setHasActiveUserSentInvite(false);
+        CreateGameForTwoPlayers(enemyId, goToGame, () => inviteRef.child("isGameStarted").set(true));
+        // make invite inactive
       }
-    }); 
+    });
+
+    inviteRef.child("isCancelled").on('value', data => {
+      if (data.val()) { // was cancelled
+        inviteRef.child("isAccepted").off(); // remove listener
+        inviteRef.child("isCancelled").off(); // remove listener
+        setHasActiveUserSentInvite(false);
+        removeInvite(inviteRef);
+        // make invite inactive
+      }
+    });
+
+    
   }, (err) => {
       throw err;
   });
+}
 
-  //goToGameCallback(true);
+function removeInvite(inviteRef) {
+  inviteRef.remove();
 }

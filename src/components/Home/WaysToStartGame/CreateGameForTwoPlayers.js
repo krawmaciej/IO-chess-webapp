@@ -4,7 +4,7 @@ import { userCachedData } from '../../../user/userData';
 
 // TODO: game starts but you have to wait for other player to join
 // if nobody yet joined the game can be cancelled
-export const CreateGameForTwoPlayers = (enemyUID, changeUrlToJoinGame) => {
+export const CreateGameForTwoPlayers = (enemyUID, changeUrlToJoinGame, notifyEnemyThatGameStarted) => {
     const newGame = { // game state to be pushed into database
         whitePlayerUid: "",
         blackPlayerUid: "",
@@ -39,6 +39,7 @@ export const CreateGameForTwoPlayers = (enemyUID, changeUrlToJoinGame) => {
 
 
     gameRef.set(newGame).then(() => {
+        notifyEnemyThatGameStarted();
         changeUrlToJoinGame();
     }, (err) => {
         throw err;
