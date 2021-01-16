@@ -36,8 +36,8 @@ export default class Play extends React.Component {
     super();    
     const chess = new Chess(userCachedData.color);
     this.state = {
-      userRef: database().ref("users").child(userCachedData.uid),
-      gameRef: database().ref("games").child(userCachedData.gameId), // reference to game in database
+      userRef: userCachedData.uid === "" ? null : database().ref("users").child(userCachedData.uid),
+      gameRef: userCachedData.gameId === "" ? null : database().ref("games").child(userCachedData.gameId), // reference to game in database
       game: {
         whitePlayerUid: "",
         blackPlayerUid: "",
@@ -77,6 +77,11 @@ export default class Play extends React.Component {
   }
 
   componentDidMount() {
+    // not possible to play if theres no game created
+    if (!this.state.gameRef) {
+      this.props.history.push('/');
+      return;
+    }
 
     // at the beginning cache whole game data from server
     this.state.gameRef.once("value", data => {
