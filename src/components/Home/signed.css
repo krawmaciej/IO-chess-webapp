@@ -1,5 +1,6 @@
 table {
   width: 100%;
+  font-size: 14px;
 }
 
 table > tbody {
@@ -12,6 +13,12 @@ table > tbody {
   width: auto;
   margin: 0 auto;
   text-align: center;
+}
+
+.logout {
+  position: absolute;
+  top: 0px;
+  right: 0px;
 }
 
 .welcome-child {

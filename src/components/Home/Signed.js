@@ -50,7 +50,22 @@ export default function Signed() {
             );
         } else {
             return (
-                null
+              <table class="table">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Games Won</th>
+                  <th>Games Lost</th>
+                  <th>Total</th>
+                  <th>Winratio</th>
+                  <th>Status</th>
+                  <th>Invite</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ActiveUsers />
+              </tbody>
+            </table>
             );
         }
     }
@@ -104,34 +119,18 @@ export default function Signed() {
     return (
         <div>
           {invite(isInviteSent, setIsInviteSent, invitorUsername, inviteDbKey, acceptInvite, cancelInvite)}
-          <div class="welcome">
-            <div class="welcome-child">
-              <p>Hi! {getUsername(userCachedData.email)}</p>
-            </div>
-            <div class="welcome">
+          <div>
+          <div class="logout">
               <button onClick={SignOut}>Logout</button>
             </div>
+            <div class="welcome">
+              <p>Hi {getUsername(userCachedData.email)}!</p>
+              <p>Invite a person from the list below to play with them</p>
+              <br></br>
+              <br></br>
+              {renderPlayGamesMenu()}
+            </div>
           </div>
-          
-          
-          {renderPlayGamesMenu()}
-
-          <table>
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Games Won</th>
-                <th>Games Lost</th>
-                <th>Total</th>
-                <th>Winratio</th>
-                <th>Status</th>
-                <th>Invite</th>
-              </tr>
-            </thead>
-            <tbody>
-              <ActiveUsers />
-            </tbody>
-          </table>
         </div>
     );
 }
