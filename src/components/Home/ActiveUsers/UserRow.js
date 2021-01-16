@@ -4,7 +4,9 @@ import Popup from "reactjs-popup";
 import { database } from "../../../firebase/firebase";
 import { isPlayerInGame, userCachedData } from "../../../user/userData";
 import { CreateGameForTwoPlayers } from "../WaysToStartGame/CreateGameForTwoPlayers";
+
 import './invite.css';
+import './userrow.css';
 
 const inviteSent = (hasActiveUserSentInvite) => (
   <Popup
@@ -79,7 +81,7 @@ function sendInviteToGame(user, hasActiveUserSentInvite, setHasActiveUserSentInv
     if (isNotInGame(user.gameId) && !hasActiveUserSentInvite && !isPlayerInGame()) {
       return <button onClick={() => sendGameInvite(user.uid, setHasActiveUserSentInvite, goToGame)}>Send invite</button>;
     } else {
-      return null;
+      return <button class="disabled" disabled>Send invite</button>;
     }
 }
 

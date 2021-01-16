@@ -1,0 +1,16 @@
+button:disabled {
+  background-color: #F8F8F8;
+  border: none;
+  color: #CCCCCC;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition-duration: 0.4s;
+}
+
+button:disabled:hover {
+  background-color: #F8F8F8;
+  color: #CCCCCC;
+  cursor: default;
+}
