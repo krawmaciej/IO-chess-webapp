@@ -11,6 +11,10 @@ const isPlayerInGame = () => {
     return (userCachedData.gameId === "") ? false : true;
 }
 
+function getUsername(email) {
+  return email.substring(0, email.lastIndexOf("@"));
+}
+
 const resetUserData = (data) => {
     data.isLoggedIn = false;
     data.uid = "";
@@ -27,4 +31,4 @@ const loadUserDataFromServer = (user, dataFromServer) => {
     user.color = dataFromServer.color;
 }
 
-export { userCachedData, isPlayerInGame, resetUserData, loadUserDataFromServer };
+export { userCachedData, isPlayerInGame, resetUserData, loadUserDataFromServer, getUsername };

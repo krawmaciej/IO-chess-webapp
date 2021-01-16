@@ -10,7 +10,6 @@ export default class Play extends React.Component {
   constructor() {
     super();    
     const chess = new Chess(userCachedData.color);
-    gameTimer();
     this.state = {
       gameRef: database().ref("games").child(userCachedData.gameId), // reference to game in database
       game: {
@@ -27,9 +26,6 @@ export default class Play extends React.Component {
   render() {
     return (
       <div className="mainwindow">
-        <p>Logged in as {userCachedData.email}</p>
-        <p>uid is {userCachedData.uid}</p> {/* TODO: uid for tests, remove later*/}
-        <p>gid is {userCachedData.gameId}</p> {/* TODO: gid for tests, remove later*/}
 
         <div className="gameboard">
           <div id="chessBoard"> </div>
@@ -37,7 +33,6 @@ export default class Play extends React.Component {
         <div className="matchinfo" id="matchinfo">
           <p>Your color is {userCachedData.color}</p>
           <p>Now it's {this.state.game.activePlayerColor}'s turn.</p>
-          <p>Pozostały czas: <span id="timer">-:-</span></p>
         </div>
         <button onClick={() => { this.RESET() }}>CLEAR MOVES</button>
         <button onClick={() => { console.log(this) }}>this</button>
@@ -136,31 +131,31 @@ export default class Play extends React.Component {
 }
 
 
-//GAME TIMER
+//GAME TIMER element not found, po wciśnięciu wstecz
 
-function gameTimer() {
-  var t = 15; //timer value in minutes
+// function gameTimer() {
+//   var t = 15; //timer value in minutes
 
-  var msNow = new Date().getTime();
-  var msCountdownDate = new Date(msNow + t * 60 * 1000).getTime();
+//   var msNow = new Date().getTime();
+//   var msCountdownDate = new Date(msNow + t * 60 * 1000).getTime();
 
-  var x = setInterval(function () {
-    var now = new Date().getTime();
+//   var x = setInterval(function () {
+//     var now = new Date().getTime();
 
-    var delta = msCountdownDate - now; //remaining time
+//     var delta = msCountdownDate - now; //remaining time
 
-    var minutes = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60)); // 1h/1m
-    var seconds = Math.floor((delta % (1000 * 60)) / 1000); // 1m/1s
+//     var minutes = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60)); // 1h/1m
+//     var seconds = Math.floor((delta % (1000 * 60)) / 1000); // 1m/1s
 
-    if (seconds < 10 && seconds >= 0) { seconds = "0" + seconds };
+//     if (seconds < 10 && seconds >= 0) { seconds = "0" + seconds };
 
-    document.getElementById("timer").innerHTML = minutes + ":" + seconds;
+//     document.getElementById("timer").innerHTML = minutes + ":" + seconds;
 
-    if (delta < 0) {
-      clearInterval(x);
-      document.getElementById("timer").innerHTML = "<span style='color:red;'>Koniec czasu!</span>";
-      alert("Koniec czasu!"); //Start new game?
-    }
+//     if (delta < 0) {
+//       clearInterval(x);
+//       document.getElementById("timer").innerHTML = "<span style='color:red;'>Koniec czasu!</span>";
+//       alert("Koniec czasu!"); //Start new game?
+//     }
 
-  }, 1000);
-}
+//   }, 1000);
+// }

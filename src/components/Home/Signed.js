@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import { auth, invitesRef } from '../../firebase/firebase';
 
 // USER INFO
-import { userCachedData, isPlayerInGame } from '../../user/userData';
+import { userCachedData, isPlayerInGame, getUsername } from '../../user/userData';
 
 // USERLIST
 import ActiveUsers from "./ActiveUsers/ActiveUsers";
@@ -79,11 +79,8 @@ export default function Signed() {
         <div>
           {invite(isInviteSent, setIsInviteSent, inviteDbKey, acceptInvite, cancelInvite)}
 
-          <p>Logged in as {userCachedData.email}</p>
-          <p>uid is {userCachedData.uid}</p> {/* TODO: uid for tests, remove later*/}
-          <p>gid is {userCachedData.gameId}</p> {/* TODO: gid for tests, remove later*/}
+          <p>Hi! {getUsername(userCachedData.email)}</p>
           {renderPlayGamesMenu()}
-          <button onClick={SignOut}>Logout</button>
           
           <table>
             <thead>
@@ -103,11 +100,4 @@ export default function Signed() {
           </table>
         </div>
     );
-}
-
-function SignOut() {
-  auth().signOut().then(() => {
-    console.log('successful signout');
-    // Sign-out successful.
-  }).catch(console.log)
 }
