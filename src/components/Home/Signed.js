@@ -10,6 +10,8 @@ import { userCachedData, isPlayerInGame, getUsername } from '../../user/userData
 import ActiveUsers from "./ActiveUsers/ActiveUsers";
 import { invite } from "./InvitePopup";
 
+import './signed.css';
+
 export default function Signed() {
   const [isInviteSent, setIsInviteSent] = useState(false);
   const [inviteDbKey, setInviteDbKey] = useState("");
@@ -102,8 +104,16 @@ export default function Signed() {
     return (
         <div>
           {invite(isInviteSent, setIsInviteSent, invitorUsername, inviteDbKey, acceptInvite, cancelInvite)}
-          <button onClick={SignOut}>Logout</button>
-          <p>Hi! {getUsername(userCachedData.email)}</p>
+          <div class="welcome">
+            <div class="welcome-child">
+              <p>Hi! {getUsername(userCachedData.email)}</p>
+            </div>
+            <div class="welcome">
+              <button onClick={SignOut}>Logout</button>
+            </div>
+          </div>
+          
+          
           {renderPlayGamesMenu()}
 
           <table>
