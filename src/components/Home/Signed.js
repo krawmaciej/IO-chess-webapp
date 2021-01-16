@@ -1,7 +1,7 @@
 // REACT and FIREBASE
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { auth, database } from '../../firebase/firebase';
+import { auth, invitesRef } from '../../firebase/firebase';
 
 // USER INFO
 import { userCachedData, isPlayerInGame } from '../../user/userData';
@@ -13,30 +13,23 @@ import { WaitForPlayerToJoin } from './WaysToStartGame/WaitForPlayerToJoin';
 import ActiveUsers from "./ActiveUsers/ActiveUsers";
 import { invite } from "./InvitePopup";
 
-
 export default function Signed() {
   const [isInviteSent, setIsInviteSent] = useState(false); // TODO: take this from database instead hint: react setstate once
-  const [inviteDbId, setInviteDbId] = useState("");
+  const [inviteDbKey, setInviteDbKey] = useState("");
   const history = useHistory();
+  
 
   useEffect(() => {
-
-  // TODO: change to non automatic
-  // if invite is sent to this player then show it on screen
-  // automaticly accepts invite for now
-  const invitesRef = database().ref("invites");
-  invitesRef.on('value', data => {
-    data.forEach((entry) => {
-      if (isThisUserInvited(entry.val())) {
-        showInvite();
-      }
+    // TODO: change to non automatic
+    // if invite is sent to this player then show it on screen
+    // automaticly accepts invite for now
+    invitesRef.on('value', data => {
+      data.forEach((entry) => {
+        if (isThisUserInvited(entry.val())) {
+          showInvite(entry.key);
+        }
+      });
     });
-  });
-  
-  function gameCreated() {
-  }
-  
-
   }, []);
 
 
@@ -71,13 +64,13 @@ export default function Signed() {
         WaitForPlayerToJoin(goToGame); // invokes a game type creation function that the user clicked on
     }
 
-    function acceptInvite() {
-      invitesRef.child(entry.key).child("isAccepted").set(true).then(() => {
-        invitesRef.child(entry.key).child("isGameStarted").on('value', data => {
+    function acceptInvite(key) {
+      invitesRef.child(key).child("isAccepted").set(true).then(() => {
+        invitesRef.child(key).child("isGameStarted").on('value', data => {
           if (data.val()) { // game was created then join
-            invitesRef.child(entry.key).child("isGameStarted").off(); // remove listener
+            invitesRef.child(key).child("isGameStarted").off(); // remove listener
             //setHasActiveUserSentInvite(false); // close popup
-            invitesRef.child(entry.key).remove(); // remove invite
+            invitesRef.child(key).remove(); // remove invite
             goToGame();
           }
         });
@@ -85,18 +78,19 @@ export default function Signed() {
     }
 
     function cancelInvite() {
-
+      console.log("canceled invite!");
     }
 
 
 
-    function showInvite() {
+    function showInvite(key) {
       setIsInviteSent(true);
+      setInviteDbKey(key);
     }
 
     return (
         <div>
-          {invite(isInviteSent, setIsInviteSent, acceptInvite, cancelInvite)}
+          {invite(isInviteSent, setIsInviteSent, inviteDbKey, acceptInvite, cancelInvite)}
 
           <p>Logged in as {userCachedData.email}</p>
           <p>uid is {userCachedData.uid}</p> {/* TODO: uid for tests, remove later*/}

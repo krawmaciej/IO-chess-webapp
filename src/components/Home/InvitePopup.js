@@ -1,7 +1,7 @@
 import Popup from 'reactjs-popup';
 import './invite.css';
 
-const invite = (showInvite, setShowInvite, acceptInvite, cancelInvite) => (
+const invite = (showInvite, setShowInvite, inviteKey, acceptInvite, cancelInvite) => (
   <Popup
     open={showInvite}
     onClose={() => {
@@ -21,7 +21,7 @@ const invite = (showInvite, setShowInvite, acceptInvite, cancelInvite) => (
           You have been invited to a game!
         </div>
         <div className="actions">
-          <button className="button" onClick={() => acceptInvite()}>
+          <button className="button" onClick={() => acceptInvite(inviteKey)}>
             Accept
           </button>
           <button className="button" onClick={() => close}>
