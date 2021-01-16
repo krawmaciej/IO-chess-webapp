@@ -18,6 +18,7 @@ const drawBoard = (chess, callback) => {
     }
   }
   else if (chess.thisPlayerColor === CHESS_COLORS.BLACK) {
+    toggle = !toggle;
     for (let i = 7; i >= 0; i--) {
       for (let j = 0; j < 8; j++) {
         container.appendChild(makeTile(toggle, i, j));      
