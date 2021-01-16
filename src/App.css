@@ -12,3 +12,19 @@ code {
     monospace;
 }
 
+button {
+  background-color: #555555;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition-duration: 0.4s;
+}
+
+button:hover {
+  background-color: #AAAAAA; /* Green */
+  color: white;
+  cursor: pointer;
+}

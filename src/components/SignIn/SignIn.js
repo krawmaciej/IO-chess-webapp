@@ -40,7 +40,7 @@ export default class Login extends Component {
           <div className="form-group">
             <input
               className="form-control"
-              placeholder="Email"
+              placeholder="email"
               name="email"
               type="email"
               onChange={this.handleChange}
@@ -50,7 +50,7 @@ export default class Login extends Component {
           <div className="form-group">
             <input
               className="form-control"
-              placeholder="Hasło"
+              placeholder="password"
               name="password"
               type="password"
               onChange={this.handleChange}
@@ -61,10 +61,10 @@ export default class Login extends Component {
             {this.state.error ? (
               <p className="text-danger">{this.state.error}</p>
             ) : null}
-            <button className="btn btn-primary px-5" type="submit">Zaloguj!</button>
+            <button className="btn btn-primary px-5" type="submit">Log in!</button>
           </div>
           <p>
-            <Link to="/SignUp">Utwórz konto!</Link>
+            <Link to="/SignUp">Sign up!</Link>
           </p>
         </form>
 
