@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import { auth } from "../../firebase/firebase";
 
 export default class Login extends Component {
@@ -63,9 +62,6 @@ export default class Login extends Component {
             ) : null}
             <button className="btn btn-primary px-5" type="submit">Log in!</button>
           </div>
-          <p>
-            <Link to="/SignUp">Sign up!</Link>
-          </p>
         </form>
 
       </div>

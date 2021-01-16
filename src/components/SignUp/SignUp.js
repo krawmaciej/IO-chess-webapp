@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { auth, database } from "../../firebase/firebase";
 
 // userData
@@ -73,9 +72,6 @@ export default class SignUp extends Component {
             }
             <button className="btn btn-primary px-5" type="submit">Sign up!</button>
           </div>
-          <p>
-            <Link to="/SignIn">Log in!</Link>
-          </p>
         </form>
       </div>
     )

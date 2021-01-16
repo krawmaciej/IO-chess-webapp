@@ -8,7 +8,7 @@ import { userCachedData, isPlayerInGame, getUsername } from '../../user/userData
 
 // USERLIST
 import ActiveUsers from "./ActiveUsers/ActiveUsers";
-import { invite } from "./InvitePopup";
+import { invite } from "./Popups/InvitePopup";
 
 import './signed.css';
 
