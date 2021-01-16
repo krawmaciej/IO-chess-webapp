@@ -142,5 +142,5 @@ function calculateWinRatio(gamesWon, totalGamesPlayed) {
   if (totalGamesPlayed === 0) {
     return 0;
   }
-  return gamesWon/totalGamesPlayed * 100; 
+  return Math.round(gamesWon/totalGamesPlayed * 100); 
 }

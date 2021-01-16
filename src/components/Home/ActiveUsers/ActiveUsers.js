@@ -45,12 +45,12 @@ function parseUsersDataToList(data) {
   for (var key in data) {
     if (data.hasOwnProperty(key)) {
       const user = {
-        uid: data[key].uid,
-        email: data[key].email,
-        gameId: data[key].gameId,
-        isLoggedIn: data[key].isLoggedIn,
-        totalGamesPlayed: 0,
-        gamesWon: 0
+        uid: data[key].uid ? data[key].uid : "",
+        email: data[key].email ? data[key].email : "",
+        gameId: data[key].gameId ? data[key].gameId : "",
+        isLoggedIn: data[key].isLoggedIn ? data[key].isLoggedIn : false,
+        totalGamesPlayed: data[key].totalGamesPlayed ? data[key].totalGamesPlayed : 0,
+        gamesWon: data[key].gamesWon ? data[key].gamesWon : 0
       }
       userList.push(user);
     }
