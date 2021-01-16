@@ -40,8 +40,7 @@ export default class App extends Component {
     auth().onAuthStateChanged(user => {
       
       
-      // user logged in
-      if (user) {
+      if (user) { // user logged in
         //console.log('user id:  ' + user.uid);
         this.loggedUserRef = database().ref("users").child(user.uid); // get userData from database
         this.loggedUserRef.update({ isLoggedIn: true }); // set user as logged in   
@@ -50,8 +49,7 @@ export default class App extends Component {
         this.loggedUserRef.on("value", data => { 
           cacheUserData(data.val()); // wait for data from server and cache it
         });
-      // user not logged in
-      } else {
+      } else { // user not logged in
         if (this.loggedUserRef) {
           this.loggedUserRef.update({ isLoggedIn: false });
         }

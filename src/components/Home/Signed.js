@@ -105,7 +105,7 @@ export default function Signed() {
           <button onClick={SignOut}>Logout</button>
           <p>Hi! {getUsername(userCachedData.email)}</p>
           {renderPlayGamesMenu()}
-          
+
           <table>
             <thead>
               <tr>

@@ -11,6 +11,7 @@ export default class Play extends React.Component {
     super();    
     const chess = new Chess(userCachedData.color);
     this.state = {
+      userRef: database().ref("users").child(userCachedData.uid),
       gameRef: database().ref("games").child(userCachedData.gameId), // reference to game in database
       game: {
         whitePlayerUid: "",
@@ -34,8 +35,11 @@ export default class Play extends React.Component {
           <p>Your color is {userCachedData.color}</p>
           <p>Now it's {this.state.game.activePlayerColor}'s turn.</p>
         </div>
-        <button onClick={() => { this.RESET() }}>CLEAR MOVES</button>
-        <button onClick={() => { console.log(this) }}>this</button>
+        {/* <button onClick={() => { this.RESET() }}>CLEAR MOVES</button> */}
+        <button onClick={() => { this.finishChessGame(
+          userCachedData.color === CHESS_COLORS.BLACK ? CHESS_COLORS.WHITE : CHESS_COLORS.BLACK
+          ) }}>Forfeit</button>
+        {/* <button onClick={() => { console.log(this) }}>this</button> */}
       </div>
     );
   }
@@ -73,6 +77,14 @@ export default class Play extends React.Component {
     // listen to changes on activePlayerColor
     this.state.gameRef.child("activePlayerColor").on("value", data => {
       this.updatePageActivePlayerColor(data.val());
+    });
+
+    // listen to who won the game
+    this.state.gameRef.child("winner").on("value", data => {
+      if (data.val()) {
+        this.props.history.push('/')
+        this.closeGameOnDatabase(data.val());
+      }
     });
     
   }
@@ -125,9 +137,29 @@ export default class Play extends React.Component {
   }    
 
   finishGame() {
-    alert(`Game Over. ${this.state.chess.winner} won the game!`);
-    this.state.gameRef.child('winner').set(this.state.chess.winner);
+    this.finishChessGame(this.state.chess.winner);
   }
+
+  finishChessGame(winner) {
+    alert(`Game Over. ${winner} won the game!`);
+    this.state.gameRef.child('winner').set(winner);
+  }
+
+  closeGameOnDatabase(winner) {
+    this.updateWins(winner);
+    this.state.userRef.child("color").set("");
+    this.state.userRef.child("gameId").set("");
+    userCachedData.totalGamesPlayed++;
+    this.state.userRef.child("totalGamesPlayed").set(userCachedData.totalGamesPlayed);
+  }
+
+  updateWins(winner) {
+    if (userCachedData.color === winner) {
+      userCachedData.gamesWon++;
+      this.state.userRef.child("gamesWon").set(userCachedData.gamesWon);
+    }
+  }
+
 }
 
 

@@ -4,7 +4,9 @@ const userCachedData = {
     uid: "",
     email: "",
     gameId: "",
-    color: ""
+    color: "",
+    gamesWon: 0,
+    totalGamesPlayed: 0
 }
 
 const isPlayerInGame = () => {
@@ -21,6 +23,8 @@ const resetUserData = (data) => {
     data.email = "";
     data.gameId = "";
     data.color = "";
+    data.gamesWon = 0;
+    data.totalGamesPlayed = 0;
 }
 
 const loadUserDataFromServer = (user, dataFromServer) => {
@@ -29,6 +33,9 @@ const loadUserDataFromServer = (user, dataFromServer) => {
     user.email = dataFromServer.email;
     user.gameId = dataFromServer.gameId;
     user.color = dataFromServer.color;
+
+    user.gamesWon = dataFromServer.gamesWon ? dataFromServer.gamesWon : 0;
+    user.totalGamesPlayed = dataFromServer.totalGamesPlayed ? dataFromServer.totalGamesPlayed : 0;
 }
 
 export { userCachedData, isPlayerInGame, resetUserData, loadUserDataFromServer, getUsername };
