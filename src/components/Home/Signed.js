@@ -102,7 +102,7 @@ export default function Signed() {
     return (
         <div>
           {invite(isInviteSent, setIsInviteSent, invitorUsername, inviteDbKey, acceptInvite, cancelInvite)}
-
+          <button onClick={SignOut}>Logout</button>
           <p>Hi! {getUsername(userCachedData.email)}</p>
           {renderPlayGamesMenu()}
           
@@ -124,4 +124,11 @@ export default function Signed() {
           </table>
         </div>
     );
+}
+
+function SignOut() {
+  auth().signOut().then(() => {
+    console.log('successful signout');
+    // Sign-out successful.
+  }).catch(console.log)
 }

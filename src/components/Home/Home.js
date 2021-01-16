@@ -8,7 +8,6 @@ export default function Home() {
   return (
     <div>
       <div>
-        <button onClick={SignOut}>Logout</button>
         {renderHome()}
       </div>
     </div>
@@ -24,9 +23,3 @@ function renderHome() {
 }
 
 // todo move to signed
-function SignOut() {
-  auth().signOut().then(() => {
-    console.log('successful signout');
-    // Sign-out successful.
-  }).catch(console.log)
-}
