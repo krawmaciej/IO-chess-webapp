@@ -54,13 +54,20 @@ function sortByTotalGamesAddVictories(array) {
 }
 
 function compareUsersByTotalAddWon( a, b ) {
-  if ( a.totalGamesPlayed+a.gamesWon < b.totalGamesPlayed+b.gamesWon ){
+  if ( calculateWinRatio(a.gamesWon, a.totalGamesPlayed) < calculateWinRatio(b.gamesWon, b.totalGamesPlayed) ){
     return 1;
   }
-  if ( a.totalGamesPlayed+a.gamesWon > b.totalGamesPlayed+b.gamesWon ){
+  if ( calculateWinRatio(a.gamesWon, a.totalGamesPlayed) > calculateWinRatio(b.gamesWon, b.totalGamesPlayed) ){
     return -1;
   }
   return 0;
+}
+
+function calculateWinRatio(gamesWon, totalGamesPlayed) {
+  if (totalGamesPlayed === 0) {
+    return 0;
+  }
+  return Math.round(gamesWon/totalGamesPlayed * 100); 
 }
 
 function parseUsersDataToList(data) {

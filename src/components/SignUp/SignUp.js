@@ -52,7 +52,7 @@ export default class SignUp extends Component {
           <div className="form-group">
             <input 
               className="form-control"
-              placeholder="Email"
+              placeholder="email"
               name="email" type="email"
               onChange={this.handleChange}
               value={this.state.email}
@@ -61,7 +61,7 @@ export default class SignUp extends Component {
           <div className="form-group">
             <input
               className="form-control"
-              placeholder="Hasło"
+              placeholder="password"
               name="password"
               type="password"
               onChange={this.handleChange}
@@ -71,10 +71,10 @@ export default class SignUp extends Component {
           <div className="form-group"> {
               this.state.error ? <p className="text-danger">{this.state.error}</p> : null
             }
-            <button className="btn btn-primary px-5" type="submit">Utwórz konto!</button>
+            <button className="btn btn-primary px-5" type="submit">Sign up!</button>
           </div>
           <p>
-            <Link to="/SignIn">Zaloguj się!</Link>
+            <Link to="/SignIn">Log in!</Link>
           </p>
         </form>
       </div>
