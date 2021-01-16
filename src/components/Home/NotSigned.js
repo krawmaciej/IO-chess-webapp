@@ -1,13 +1,16 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 
+import './notsigned.css';
+
 export default function NotSigned() {
     return (
-        <div>
-            <p>Not logged in</p>
-            <Link to="/SignIn">Log in</Link>
-            <p>or</p>
-            <Link to="/SignUp">Create an account</Link>
+        <div class="not-signed">
+          <p class="welcome">Welcome to chess</p>
+          <Link class="button" to="/SignIn">Log in</Link>
+          <Link class="button" to="/SignUp">Create an account</Link>
+
+
         </div>
     );
 }

@@ -1,0 +1,30 @@
+.not-signed {
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%)
+}
+
+.welcome {
+  margin: 50px;
+  font-size: 30px;
+}
+
+.button {
+  background-color: #555555;
+  margin: 2px;
+  border: none;
+  color: white;
+  padding: 20px 50px;
+  text-align: center;
+  text-decoration: none;
+  transition-duration: 0.4s;
+}
+
+.button:hover {
+  background-color: #AAAAAA;
+  color: white;
+  cursor: pointer;
+}
