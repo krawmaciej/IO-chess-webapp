@@ -22,11 +22,8 @@ export default function ActiveUsers() {
 
   // map instead of foreach because javascript
   return (
-        activeUsersList.map((user, uniqueId) => {
-          const isNotThisUser = (userCachedData.uid === user.uid) ? false : true;
-          const isLoggedIn = user.isLoggedIn;
-          if (isNotThisUser && isLoggedIn) {
-            return <UserRow
+    activeUsersSortedArray(activeUsersList).map((user, uniqueId) => {
+      return <UserRow
               uid={user.uid}
               email={user.email}
               gameId={user.gameId}
@@ -34,10 +31,36 @@ export default function ActiveUsers() {
               totalGamesPlayed={user.totalGamesPlayed}
               gamesWon={user.gamesWon}
             />;
-          }
-          return null;
-        })
+    })
   );
+}
+
+function activeUsersSortedArray(activeUsersList) {
+  var array = [];
+  activeUsersList.map((user, uniqueId) => {
+    const isNotThisUser = (userCachedData.uid === user.uid) ? false : true;
+    const isLoggedIn = user.isLoggedIn;
+    if (isNotThisUser && isLoggedIn) {
+      array.push(user);
+    }
+  });
+
+  return sortByTotalGamesAddVictories(array);
+}
+
+function sortByTotalGamesAddVictories(array) {
+  array.sort(compareUsersByTotalAddWon);
+  return array;
+}
+
+function compareUsersByTotalAddWon( a, b ) {
+  if ( a.totalGamesPlayed+a.gamesWon < b.totalGamesPlayed+b.gamesWon ){
+    return 1;
+  }
+  if ( a.totalGamesPlayed+a.gamesWon > b.totalGamesPlayed+b.gamesWon ){
+    return -1;
+  }
+  return 0;
 }
 
 function parseUsersDataToList(data) {
@@ -55,6 +78,5 @@ function parseUsersDataToList(data) {
       userList.push(user);
     }
   }
-  console.log("users data: ", userList);
   return userList;
 }
