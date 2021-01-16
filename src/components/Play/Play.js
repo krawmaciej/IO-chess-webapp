@@ -6,6 +6,31 @@ import { userCachedData } from '../../user/userData';
 import '../../chess/chessboard.css';
 import './Play.css';
 
+import Popup from 'reactjs-popup';
+import '../Home/invite.css';
+
+const gameOverPopup = (winner, goToHome)=> (
+  <Popup
+    open={winner !== ""}
+    onClose={() => goToHome()}
+    modal
+  >
+    {close => (
+      <div className="inviteSent">
+        <div className="header">
+          {' '}
+          Game Over. {winner} won the game!
+        </div>
+        <div className="actions">
+          <button className="button" onClick={close}>
+            OK
+          </button>
+        </div>
+      </div>
+    )}
+  </Popup>
+);
+
 export default class Play extends React.Component {
   constructor() {
     super();    
@@ -27,6 +52,7 @@ export default class Play extends React.Component {
   render() {
     return (
       <div className="mainwindow">
+        {gameOverPopup(this.state.game.winner, ()=>this.props.history.push('/'))}
 
         <div className="gameboard">
           <div id="chessBoard"> </div>
@@ -83,12 +109,16 @@ export default class Play extends React.Component {
     this.state.gameRef.child("winner").on("value", data => {
       if (data.val()) {
         this.closeGameOnDatabase(data.val());
-        alert(`Game Over. ${data.val()} won the game!`);
-        console.log("end", data.val());
-        this.props.history.push('/')
+        var gameUpdatedWinner = this.state.game;
+        gameUpdatedWinner.winner = data.val();
+        this.setState({game: gameUpdatedWinner});
       }
     });
     
+  }
+
+  goToHome() {
+    this.props.history.push('/');
   }
   
   cacheGameData(data) {
