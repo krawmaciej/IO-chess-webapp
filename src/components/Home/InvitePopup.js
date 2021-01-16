@@ -3,7 +3,7 @@ import './invite.css';
 
 
 // TODO: add player username
-const invite = (showInvite, setShowInvite, inviteKey, acceptInvite, cancelInvite) => (
+const invite = (showInvite, setShowInvite, invitorUsername, inviteKey, acceptInvite, cancelInvite) => (
   <Popup
     open={showInvite}
     onClose={() => {
@@ -17,10 +17,10 @@ const invite = (showInvite, setShowInvite, inviteKey, acceptInvite, cancelInvite
         <button className="close" onClick={() => close()}>
           &times;
         </button>
-        <div className="header"> Invitation </div>
+        <div className="header">Invitation from</div>
         <div className="content">
           {' '}
-          You have been invited to a game!
+          You have been invited to a game by {invitorUsername}!
         </div>
         <div className="actions">
           <button className="button" onClick={() => {

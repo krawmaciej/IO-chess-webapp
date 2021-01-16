@@ -89,6 +89,7 @@ function sendGameInvite(enemyId, setHasActiveUserSentInvite, goToGame) {
 
   const invite = {
     creator: userCachedData.uid,
+    creatorName: getUsername(userCachedData.email),
     joiner: enemyId,
     isAccepted: false,
     isCancelled: false,

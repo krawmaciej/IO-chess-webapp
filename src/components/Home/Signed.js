@@ -13,6 +13,7 @@ import { invite } from "./InvitePopup";
 export default function Signed() {
   const [isInviteSent, setIsInviteSent] = useState(false);
   const [inviteDbKey, setInviteDbKey] = useState("");
+  const [invitorUsername, setInvitorUsername] = useState("");
   const history = useHistory();
   
 
@@ -21,7 +22,7 @@ export default function Signed() {
     invitesRef.on('value', data => {
       data.forEach((entry) => {
         if (isUserInvited(entry.val(), userCachedData.uid)) {
-          showInvite(entry.key);
+          showInvite(entry);
         }
       });
     });
@@ -92,14 +93,15 @@ export default function Signed() {
       invitesRef.child(key).child("isCancelled").set(true);
     }
 
-    function showInvite(key) {
-      setInviteDbKey(key);
+    function showInvite(entry) {
+      setInvitorUsername(entry.val().creatorName);
+      setInviteDbKey(entry.key);
       setIsInviteSent(true);
     }
 
     return (
         <div>
-          {invite(isInviteSent, setIsInviteSent, inviteDbKey, acceptInvite, cancelInvite)}
+          {invite(isInviteSent, setIsInviteSent, invitorUsername, inviteDbKey, acceptInvite, cancelInvite)}
 
           <p>Hi! {getUsername(userCachedData.email)}</p>
           {renderPlayGamesMenu()}
