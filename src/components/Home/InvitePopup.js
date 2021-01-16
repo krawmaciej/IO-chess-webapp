@@ -14,9 +14,6 @@ const invite = (showInvite, setShowInvite, invitorUsername, inviteKey, acceptInv
   >
     {close => (
       <div className="modal">
-        <button className="close" onClick={() => close()}>
-          &times;
-        </button>
         <div className="header">Invitation from</div>
         <div className="content">
           {' '}
