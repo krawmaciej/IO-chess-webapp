@@ -20,7 +20,7 @@ export default function Signed() {
   useEffect(() => {
     invitesRef.on('value', data => {
       data.forEach((entry) => {
-        if (isThisUserInvited(entry.val())) {
+        if (isUserInvited(entry.val(), userCachedData.uid)) {
           showInvite(entry.key);
         }
       });
@@ -28,8 +28,12 @@ export default function Signed() {
   }, []);
 
 
-  function isThisUserInvited(entry) {
-    return (entry.joiner === userCachedData.uid) ? true : false;
+  function isUserInvited(entry, userId) {
+    return (entry.joiner === userId) ? true : false;
+  }
+
+  function isUserInvitor(entry, userId) {
+    return (entry.creator === userId) ? true : false;
   }
     
     // those functions are inside Signed() because they use react hook history
@@ -48,8 +52,24 @@ export default function Signed() {
         }
     }
 
+    function cleanupBothPlayersExistingInvites(key) {
+      invitesRef.child(key).once("value", data => {
+        removeAllInvites(data.val().creator);
+        removeAllInvites(data.val().joiner);
+      });
+    }
+
+    function removeAllInvites(userId) {
+      invitesRef.once('value', data => {
+        data.forEach((entry) => {
+          if (isUserInvited(entry.val(), userId) || isUserInvitor(entry.val(), userId)) {
+            invitesRef.child(entry.key).remove();
+          }
+        });
+      });
+    }
+
     function goToGame() {
-        // TODO: check first if game exists in the database, if not throw error
         history.push("/play");
     }
 
@@ -58,8 +78,10 @@ export default function Signed() {
         invitesRef.child(key).child("isGameStarted").on('value', data => {
           if (data.val()) { // game was created then join
             invitesRef.child(key).child("isGameStarted").off(); // remove listener
-            //setHasActiveUserSentInvite(false); // close popup
-            invitesRef.child(key).remove(); // remove invite
+            
+            // take care of both players invites
+            cleanupBothPlayersExistingInvites(key);
+
             goToGame();
           }
         });

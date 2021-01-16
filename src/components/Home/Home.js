@@ -23,6 +23,7 @@ function renderHome() {
   }
 }
 
+// todo move to signed
 function SignOut() {
   auth().signOut().then(() => {
     console.log('successful signout');

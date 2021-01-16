@@ -103,6 +103,7 @@ function sendGameInvite(enemyId, setHasActiveUserSentInvite, goToGame) {
         inviteRef.child("isAccepted").off(); // remove listener
         inviteRef.child("isCancelled").off(); // remove listener
         setHasActiveUserSentInvite(false);
+        // let other player know when the game has been created
         CreateGameForTwoPlayers(enemyId, goToGame, () => inviteRef.child("isGameStarted").set(true));
       }
     });

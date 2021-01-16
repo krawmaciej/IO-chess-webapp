@@ -23,7 +23,10 @@ const invite = (showInvite, setShowInvite, inviteKey, acceptInvite, cancelInvite
           You have been invited to a game!
         </div>
         <div className="actions">
-          <button className="button" onClick={() => acceptInvite(inviteKey)}>
+          <button className="button" onClick={() => {
+              acceptInvite(inviteKey);
+              setShowInvite(false);
+            }}>
             Accept
           </button>
           <button className="button" onClick={() => close()}>
