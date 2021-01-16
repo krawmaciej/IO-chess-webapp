@@ -58,13 +58,12 @@ export default class Play extends React.Component {
           <div id="chessBoard"> </div>
         </div>
         <div className="matchinfo" id="matchinfo">
-          <p>Your color is {userCachedData.color}</p>
           <p>Now it's {this.state.game.activePlayerColor}'s turn.</p>
+          <button onClick={() => { this.finishChessGame(
+          userCachedData.color === CHESS_COLORS.BLACK ? CHESS_COLORS.WHITE : CHESS_COLORS.BLACK
+          ) }}>Forfeit the game</button>
         </div>
         {/* <button onClick={() => { this.RESET() }}>CLEAR MOVES</button> */}
-        <button onClick={() => { this.finishChessGame(
-          userCachedData.color === CHESS_COLORS.BLACK ? CHESS_COLORS.WHITE : CHESS_COLORS.BLACK
-          ) }}>Forfeit</button>
         {/* <button onClick={() => { console.log(this) }}>this</button> */}
       </div>
     );
