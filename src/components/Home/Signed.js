@@ -6,23 +6,18 @@ import { auth, invitesRef } from '../../firebase/firebase';
 // USER INFO
 import { userCachedData, isPlayerInGame } from '../../user/userData';
 
-// GAME TYPES (ranked, wait for someone to join your quick game, invite other user to game)
-import { WaitForPlayerToJoin } from './WaysToStartGame/WaitForPlayerToJoin';
-
 // USERLIST
 import ActiveUsers from "./ActiveUsers/ActiveUsers";
 import { invite } from "./InvitePopup";
 
 export default function Signed() {
-  const [isInviteSent, setIsInviteSent] = useState(false); // TODO: take this from database instead hint: react setstate once
+  const [isInviteSent, setIsInviteSent] = useState(false);
   const [inviteDbKey, setInviteDbKey] = useState("");
   const history = useHistory();
   
 
+  // works only once at the component did mount phase
   useEffect(() => {
-    // TODO: change to non automatic
-    // if invite is sent to this player then show it on screen
-    // automaticly accepts invite for now
     invitesRef.on('value', data => {
       data.forEach((entry) => {
         if (isThisUserInvited(entry.val())) {
@@ -34,7 +29,6 @@ export default function Signed() {
 
 
   function isThisUserInvited(entry) {
-    console.log(entry);
     return (entry.joiner === userCachedData.uid) ? true : false;
   }
     
@@ -59,11 +53,6 @@ export default function Signed() {
         history.push("/play");
     }
 
-    function waitForPlayerToJoinButton() {
-        // put either history or gotogame function as a callback, so that play is only rendered after game was created
-        WaitForPlayerToJoin(goToGame); // invokes a game type creation function that the user clicked on
-    }
-
     function acceptInvite(key) {
       invitesRef.child(key).child("isAccepted").set(true).then(() => {
         invitesRef.child(key).child("isGameStarted").on('value', data => {
@@ -77,15 +66,13 @@ export default function Signed() {
       });
     }
 
-    function cancelInvite() {
-      console.log("canceled invite!");
+    function cancelInvite(key) {
+      invitesRef.child(key).child("isCancelled").set(true);
     }
 
-
-
     function showInvite(key) {
-      setIsInviteSent(true);
       setInviteDbKey(key);
+      setIsInviteSent(true);
     }
 
     return (

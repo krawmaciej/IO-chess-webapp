@@ -1,21 +1,23 @@
 import Popup from 'reactjs-popup';
 import './invite.css';
 
+
+// TODO: add player username
 const invite = (showInvite, setShowInvite, inviteKey, acceptInvite, cancelInvite) => (
   <Popup
     open={showInvite}
     onClose={() => {
+      cancelInvite(inviteKey);
       setShowInvite(false);
-      cancelInvite();
     }}
     modal
   >
     {close => (
       <div className="modal">
-        <button className="close" onClick={close}>
+        <button className="close" onClick={() => close()}>
           &times;
         </button>
-        <div className="header"> Modal Title </div>
+        <div className="header"> Invitation </div>
         <div className="content">
           {' '}
           You have been invited to a game!
@@ -24,8 +26,8 @@ const invite = (showInvite, setShowInvite, inviteKey, acceptInvite, cancelInvite
           <button className="button" onClick={() => acceptInvite(inviteKey)}>
             Accept
           </button>
-          <button className="button" onClick={() => close}>
-            Cancel
+          <button className="button" onClick={() => close()}>
+            Reject
           </button>
         </div>
       </div>
