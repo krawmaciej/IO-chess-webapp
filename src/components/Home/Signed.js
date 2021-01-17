@@ -92,6 +92,17 @@ export default function Signed() {
     }
 
     function acceptInvite(key) {
+      invitesRef.child(key).once("value", data => {
+        if (data.val()) {
+          acceptOnDatabase(key);
+        } else {
+          alert("Can't accept this invite, user is already in the game!");
+          return;
+        }
+      });
+    }
+
+    function acceptOnDatabase(key) {
       invitesRef.child(key).child("isAccepted").set(true).then(() => {
         invitesRef.child(key).child("isGameStarted").on('value', data => {
           if (data.val()) { // game was created then join
