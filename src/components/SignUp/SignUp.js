@@ -4,6 +4,8 @@ import { auth, database } from "../../firebase/firebase";
 // userData
 import { userCachedData } from '../../user/userData';
 
+import './signup.css';
+
 export default class SignUp extends Component {
 
   constructor() {
@@ -70,7 +72,7 @@ export default class SignUp extends Component {
           <div className="form-group"> {
               this.state.error ? <p className="text-danger">{this.state.error}</p> : null
             }
-            <button className="btn btn-primary px-5" type="submit">Sign up!</button>
+            <button className="button" type="submit">Sign up!</button>
           </div>
         </form>
       </div>

@@ -1,0 +1,22 @@
+.container {
+  width: 100%;
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%)
+}
+
+.form-group {
+  margin: 10px;
+}
+
+.button {
+  font-size: 20px;
+}
+
+input {
+  border: 1px solid gray;
+  font-size: 20px;
+}

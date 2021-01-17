@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { auth } from "../../firebase/firebase";
 
+import './signin.css';
+
 export default class Login extends Component {
   constructor() {
     super();
@@ -60,7 +62,7 @@ export default class Login extends Component {
             {this.state.error ? (
               <p className="text-danger">{this.state.error}</p>
             ) : null}
-            <button className="btn btn-primary px-5" type="submit">Log in!</button>
+            <button className="button" type="submit">Log in!</button>
           </div>
         </form>
 
